@@ -241,16 +241,7 @@ void MainWindow::on_leftButton_released()
         qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
     }
 }
-void MainWindow::on_stopButton_clicked()
-{
-    if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "S"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: S";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
-    }
-}
+
 
 
 
