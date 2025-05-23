@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "joypad.h"
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -40,8 +41,6 @@ private slots:
 
     void on_leftButton_pressed();
 
-    void on_stopButton_clicked();
-
     void on_forwardButton_pressed();
 
     void on_forwardButton_released();
@@ -52,11 +51,16 @@ private slots:
 
     void on_leftButton_released();
 
+    void handleJoypadDirection(const QString &direction);
+
+
 private:
     Ui::MainWindow *ui;
 
     QBluetoothDeviceDiscoveryAgent *discoveryAgent;
 
     QBluetoothSocket *socket;
+
+    joypad *joypadWidget;
 };
 #endif // MAINWINDOW_H

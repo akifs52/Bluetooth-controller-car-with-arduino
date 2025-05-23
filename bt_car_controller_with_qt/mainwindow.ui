@@ -139,7 +139,8 @@
           <string notr="true">QStackedWidget
 {
 	
-	background-color: rgb(170, 255, 127);
+	
+	background-color: rgb(250, 255, 199);
 }</string>
          </property>
          <property name="currentIndex">
@@ -182,19 +183,23 @@
               </property>
               <item>
                <widget class="QWidget" name="widget_3" native="true">
-                <widget class="QPushButton" name="stopButton">
-                 <property name="geometry">
-                  <rect>
-                   <x>100</x>
-                   <y>210</y>
-                   <width>93</width>
-                   <height>29</height>
-                  </rect>
+                <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <property name="spacing">
+                  <number>0</number>
                  </property>
-                 <property name="text">
-                  <string>S</string>
+                 <property name="leftMargin">
+                  <number>0</number>
                  </property>
-                </widget>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                </layout>
                </widget>
               </item>
               <item>

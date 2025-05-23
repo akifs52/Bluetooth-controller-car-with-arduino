@@ -8,18 +8,26 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , joypadWidget(new joypad)
 {
     ui->setupUi(this);
 
     ui->connectedButton->hide();
 
     ui->DisconnectBt->hide();
+
+    ui->verticalLayout_6->addWidget(joypadWidget);
+
+    connect(joypadWidget, &joypad::directionPressed,
+            this, &MainWindow::handleJoypadDirection);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
 
 void MainWindow::on_connectBt_clicked()
 {
@@ -242,6 +250,32 @@ void MainWindow::on_leftButton_released()
     }
 }
 
+void MainWindow::handleJoypadDirection(const QString &direction)
+{
+
+
+    if (!socket || !socket->isOpen()) {
+        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        return;
+    }
+
+    QByteArray komut;
+
+    if (direction == "U") {
+        komut = "F"; // Forward
+    } else if (direction == "D") {
+        komut = "B"; // Backward
+    } else if (direction == "L") {
+        komut = "L"; // Left
+    } else if (direction == "R") {
+        komut = "R"; // Right
+    } else {
+        komut = "S"; // Stop
+    }
+
+    socket->write(komut);
+    qDebug() << "[INFO] Joypad yön komutu gönderildi:" << komut;
+}
 
 
 
