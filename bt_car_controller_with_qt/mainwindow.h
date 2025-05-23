@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "joypad.h"
+#include "circularslider.h"
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -53,6 +54,9 @@ private slots:
 
     void handleJoypadDirection(const QString &direction);
 
+    void handleNormalSpeed(int value);
+
+    void handleTurnSpeed(int value);
 
 private:
     Ui::MainWindow *ui;
@@ -62,5 +66,11 @@ private:
     QBluetoothSocket *socket;
 
     joypad *joypadWidget;
+
+    CircularSlider *normalSlider = new CircularSlider;
+
+    CircularSlider *turnSlider = new CircularSlider;
+
+    bool isControlling = false; // Slider'dan sadece aktif kontrol anında veri gönder
 };
 #endif // MAINWINDOW_H

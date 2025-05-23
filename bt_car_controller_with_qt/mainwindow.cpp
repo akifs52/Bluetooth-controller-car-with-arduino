@@ -8,7 +8,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , socket(new QBluetoothSocket)
     , joypadWidget(new joypad)
+    , normalSlider(new CircularSlider)
+    , turnSlider(new CircularSlider)
 {
     ui->setupUi(this);
 
@@ -18,8 +21,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->verticalLayout_6->addWidget(joypadWidget);
 
+    ui->verticalLayout_7->addWidget(normalSlider);
+
+    ui->verticalLayout_8->addWidget(turnSlider);
+
     connect(joypadWidget, &joypad::directionPressed,
             this, &MainWindow::handleJoypadDirection);
+
+    connect(normalSlider, &CircularSlider::valueChanged,this, &MainWindow::handleNormalSpeed);
+
+    connect(turnSlider, &CircularSlider::valueChanged, this, &MainWindow::handleTurnSpeed);
 }
 
 MainWindow::~MainWindow()
@@ -159,133 +170,120 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
 void MainWindow::on_forwardButton_pressed()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "F"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: F";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = true;
+        socket->write("F\n");
+        qDebug() << "[FORWARD] Gönderildi: F";
     }
 }
 
 void MainWindow::on_forwardButton_released()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "S"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: S";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = false;
+        socket->write("S\n");
+        qDebug() << "[STOP] Gönderildi: S";
     }
 }
-
-
 
 void MainWindow::on_backButton_pressed()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "B"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: B";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = true;
+        socket->write("B\n");
+        qDebug() << "[BACKWARD] Gönderildi: B";
     }
 }
-
 
 void MainWindow::on_backButton_released()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "S"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: S";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = false;
+        socket->write("S\n");
+        qDebug() << "[STOP] Gönderildi: S";
     }
 }
-
 
 void MainWindow::on_rightButton_pressed()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "R"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: R";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = true;
+        socket->write("R\n");
+        qDebug() << "[RIGHT] Gönderildi: R";
     }
 }
 
 void MainWindow::on_rightButton_released()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "S"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: S";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = false;
+        socket->write("S\n");
+        qDebug() << "[STOP] Gönderildi: S";
     }
 }
-
 
 void MainWindow::on_leftButton_pressed()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "L"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: L";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = true;
+        socket->write("L\n");
+        qDebug() << "[LEFT] Gönderildi: L";
     }
 }
-
 
 void MainWindow::on_leftButton_released()
 {
     if (socket && socket->isOpen()) {
-        QByteArray ileriKomutu = "S"; // F → Forward (ileri) komutu
-        socket->write(ileriKomutu);
-        qDebug() << "[INFO] İleri komutu gönderildi: S";
-    } else {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        isControlling = false;
+        socket->write("S\n");
+        qDebug() << "[STOP] Gönderildi: S";
     }
 }
 
 void MainWindow::handleJoypadDirection(const QString &direction)
 {
 
-
     if (!socket || !socket->isOpen()) {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil, komut gönderilemedi.";
+        qDebug() << "[ERROR] Bluetooth soketi açık değil.";
         return;
     }
 
     QByteArray komut;
 
-    if (direction == "U") {
-        komut = "F"; // Forward
-    } else if (direction == "D") {
-        komut = "B"; // Backward
-    } else if (direction == "L") {
-        komut = "L"; // Left
-    } else if (direction == "R") {
-        komut = "R"; // Right
-    } else {
-        komut = "S"; // Stop
-    }
+    if (direction == "U") { komut = "F\n"; isControlling = true; }
+    else if (direction == "D") { komut = "B\n"; isControlling = true; }
+    else if (direction == "L") { komut = "L\n"; isControlling = true; }
+    else if (direction == "R") { komut = "R\n"; isControlling = true; }
+    else { komut = "S\n"; isControlling = false; }
 
     socket->write(komut);
-    qDebug() << "[INFO] Joypad yön komutu gönderildi:" << komut;
+    qDebug() << "[Joypad] Komut gönderildi:" << komut;
 }
 
 
+void MainWindow::handleNormalSpeed(int value)
+{
+    if (isControlling) return;
 
+    if (!socket || !socket->isOpen()) {
+        qDebug() << "[ERROR] Bluetooth soketi yok/açık değil.";
+        return;
+    }
 
+    qDebug() << "[Normal Speed]:" << value;
+    socket->write(QString("N%1\n").arg(value).toUtf8());
+}
 
+void MainWindow::handleTurnSpeed(int value)
+{
+    if (isControlling) return;
 
+    if (!socket || !socket->isOpen()) {
+        qDebug() << "[ERROR] Bluetooth soketi yok/açık değil.";
+        return;
+    }
 
-
-
-
-
+    qDebug() << "[Turning Speed]:" << value;
+    socket->write(QString("T%1\n").arg(value).toUtf8());
+}
 
 

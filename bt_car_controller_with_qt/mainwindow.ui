@@ -49,6 +49,10 @@
 {
 	
 	background-color: rgb(176, 176, 176);
+	
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
 }</string>
       </property>
       <property name="frameShape">
@@ -60,6 +64,14 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QPushButton" name="connectBt">
+         <property name="styleSheet">
+          <string notr="true">QPushButton
+{
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}</string>
+         </property>
          <property name="text">
           <string>Connect</string>
          </property>
@@ -67,6 +79,14 @@
        </item>
        <item>
         <widget class="QPushButton" name="DisconnectBt">
+         <property name="styleSheet">
+          <string notr="true">QPushButton
+{
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}</string>
+         </property>
          <property name="text">
           <string>Disconnect</string>
          </property>
@@ -74,6 +94,14 @@
        </item>
        <item>
         <widget class="QPushButton" name="ControlButton">
+         <property name="styleSheet">
+          <string notr="true">QPushButton
+{
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}</string>
+         </property>
          <property name="text">
           <string>Control</string>
          </property>
@@ -165,6 +193,9 @@
            </property>
            <item>
             <widget class="QWidget" name="widget" native="true">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <property name="spacing">
                <number>0</number>
@@ -199,6 +230,19 @@
                  <property name="bottomMargin">
                   <number>0</number>
                  </property>
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>15</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Joypad</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>
@@ -222,6 +266,12 @@
                  </property>
                  <item>
                   <widget class="QWidget" name="widget_5" native="true">
+                   <property name="styleSheet">
+                    <string notr="true">Qwidget
+{
+	border: 2px solid rgb(255, 255, 255);
+}</string>
+                   </property>
                    <layout class="QHBoxLayout" name="horizontalLayout_5">
                     <property name="spacing">
                      <number>0</number>
@@ -318,7 +368,78 @@
             </widget>
            </item>
            <item>
-            <widget class="QWidget" name="widget_2" native="true"/>
+            <widget class="QWidget" name="widget_2" native="true">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="widget_8" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_2">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>15</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Normal Speed</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_9" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_8">
+                 <item>
+                  <widget class="QLabel" name="label_3">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>15</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Turn Speed</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </widget>
