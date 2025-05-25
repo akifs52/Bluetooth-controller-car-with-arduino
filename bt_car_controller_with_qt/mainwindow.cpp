@@ -159,6 +159,10 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
     discoveryAgent->setRemoteAddress(targetAddress);
     discoveryAgent->start();
 
+    ui->connectBt->hide();
+
+    ui->DisconnectBt->show();
+
     ui->disconnectedButton->hide();
 
     ui->connectedButton->show();
@@ -286,4 +290,23 @@ void MainWindow::handleTurnSpeed(int value)
     socket->write(QString("T%1\n").arg(value).toUtf8());
 }
 
+
+
+void MainWindow::on_DisconnectBt_clicked()
+{
+    if (socket && socket->isOpen()) {
+        socket->disconnectFromService();
+        qDebug() << "[INFO] Bluetooth bağlantısı kullanıcı tarafından kesildi.";
+
+    } else {
+        qDebug() << "[INFO] Zaten bağlı değil.";
+
+
+    }
+
+    ui->connectBt->show();
+    ui->DisconnectBt->hide();
+    ui->connectedButton->hide();
+    ui->disconnectedButton->show();
+}
 

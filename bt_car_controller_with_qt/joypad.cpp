@@ -2,7 +2,7 @@
 #include "qpainter.h"
 #include "QtMath"
 #include <QTimer>
-QRect upRect, downRect, leftRect, rightRect;
+
 
 joypad::joypad(QWidget *parent)
     : QWidget{parent}

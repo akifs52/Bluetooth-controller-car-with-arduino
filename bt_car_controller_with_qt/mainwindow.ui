@@ -64,10 +64,30 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QPushButton" name="connectBt">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QPushButton
 {
 	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}
+
+QPushButton:hover
+{
+	border: 2px solid rgb(255, 255, 255);
+	
+	border-radius: 10px;
+}
+
+QPushButton:pressed
+{
+	border: 2px solid rgb(255, 0, 0);
 	
 	border-radius: 10px;
 }</string>
@@ -79,10 +99,30 @@
        </item>
        <item>
         <widget class="QPushButton" name="DisconnectBt">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QPushButton
 {
 	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}
+
+QPushButton:hover
+{
+	border: 2px solid rgb(255, 255, 255);
+	
+	border-radius: 10px;
+}
+
+QPushButton:pressed
+{
+	border: 2px solid rgb(255, 0, 0);
 	
 	border-radius: 10px;
 }</string>
@@ -94,10 +134,30 @@
        </item>
        <item>
         <widget class="QPushButton" name="ControlButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">QPushButton
 {
 	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}
+
+QPushButton:hover
+{
+	border: 2px solid rgb(255, 255, 255);
+	
+	border-radius: 10px;
+}
+
+QPushButton:pressed
+{
+	border: 2px solid rgb(255, 0, 0);
 	
 	border-radius: 10px;
 }</string>
@@ -290,6 +350,34 @@
                     </property>
                     <item>
                      <widget class="QPushButton" name="leftButton">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton
+{
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}
+
+QPushButton:hover
+{
+	border: 2px solid rgb(85, 170, 255);
+	
+	border-radius: 10px;
+}
+
+QPushButton:pressed
+{
+	border: 2px solid rgb(255, 0, 0);
+	
+	border-radius: 10px;
+}</string>
+                      </property>
                       <property name="text">
                        <string>L</string>
                       </property>
@@ -318,6 +406,34 @@
                     </property>
                     <item>
                      <widget class="QPushButton" name="forwardButton">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton
+{
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}
+
+QPushButton:hover
+{
+	border: 2px solid rgb(85, 170, 255);
+	
+	border-radius: 10px;
+}
+
+QPushButton:pressed
+{
+	border: 2px solid rgb(255, 0, 0);
+	
+	border-radius: 10px;
+}</string>
+                      </property>
                       <property name="text">
                        <string>F</string>
                       </property>
@@ -325,6 +441,34 @@
                     </item>
                     <item>
                      <widget class="QPushButton" name="backButton">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton
+{
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}
+
+QPushButton:hover
+{
+	border: 2px solid rgb(85, 170, 255);
+	
+	border-radius: 10px;
+}
+
+QPushButton:pressed
+{
+	border: 2px solid rgb(255, 0, 0);
+	
+	border-radius: 10px;
+}</string>
+                      </property>
                       <property name="text">
                        <string>B</string>
                       </property>
@@ -353,6 +497,34 @@
                     </property>
                     <item>
                      <widget class="QPushButton" name="rightButton">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton
+{
+	border: 2px solid rgb(68, 68, 68);
+	
+	border-radius: 10px;
+}
+
+QPushButton:hover
+{
+	border: 2px solid rgb(85, 170, 255);
+	
+	border-radius: 10px;
+}
+
+QPushButton:pressed
+{
+	border: 2px solid rgb(255, 0, 0);
+	
+	border-radius: 10px;
+}</string>
+                      </property>
                       <property name="text">
                        <string>R</string>
                       </property>
@@ -397,6 +569,9 @@
                  <property name="leftMargin">
                   <number>0</number>
                  </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
                  <property name="rightMargin">
                   <number>0</number>
                  </property>
@@ -422,6 +597,21 @@
               <item>
                <widget class="QWidget" name="widget_9" native="true">
                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QLabel" name="label_3">
                    <property name="maximumSize">
@@ -461,7 +651,25 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QListWidget" name="BtListWidget"/>
+            <widget class="QListWidget" name="BtListWidget">
+             <property name="styleSheet">
+              <string notr="true"> QListWidget {
+        background: #ffffff;
+        border: 1px solid #ddd;
+    }
+    QListWidget::item {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+    QListWidget::item:hover {
+        background-color: #f5f5f5;
+    }
+    QListWidget::item:selected {
+        background-color: #4caf50;
+        color: white;
+    }</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

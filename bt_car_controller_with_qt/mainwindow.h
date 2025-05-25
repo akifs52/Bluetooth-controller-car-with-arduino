@@ -58,6 +58,8 @@ private slots:
 
     void handleTurnSpeed(int value);
 
+    void on_DisconnectBt_clicked();
+
 private:
     Ui::MainWindow *ui;
 

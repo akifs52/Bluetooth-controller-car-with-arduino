@@ -7,7 +7,7 @@ CircularSlider::CircularSlider(QWidget *parent)
     : QWidget{parent}
 {
 
-   setMinimumSize(150, 150);
+   setMinimumSize(200, 200);
 }
 
 
