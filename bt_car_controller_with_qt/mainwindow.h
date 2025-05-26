@@ -60,6 +60,8 @@ private slots:
 
     void on_DisconnectBt_clicked();
 
+    void animatePageTransition(QWidget *fromPage, QWidget *toPage);
+
 private:
     Ui::MainWindow *ui;
 
@@ -74,5 +76,7 @@ private:
     CircularSlider *turnSlider = new CircularSlider;
 
     bool isControlling = false; // Slider'dan sadece aktif kontrol anında veri gönder
+
+
 };
 #endif // MAINWINDOW_H

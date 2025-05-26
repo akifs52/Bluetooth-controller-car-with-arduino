@@ -7,7 +7,7 @@ CircularSlider::CircularSlider(QWidget *parent)
     : QWidget{parent}
 {
 
-   setMinimumSize(200, 200);
+   setMinimumSize(150, 150);
 }
 
 
@@ -46,7 +46,7 @@ void CircularSlider::paintEvent(QPaintEvent *)
     p.drawArc(circleRect, 0, 360 * 16);
 
     // Progress arc
-    p.setPen(QPen(QColor(255, 64, 86), 10, Qt::SolidLine, Qt::RoundCap));
+    p.setPen(QPen(progressColor, 10, Qt::SolidLine, Qt::RoundCap));
     p.drawArc(circleRect, (startAngle - angle) * 16, angle * 16);
 
     // Knob
@@ -86,4 +86,10 @@ void CircularSlider::mouseMoveEvent(QMouseEvent *event)
     if (angle < 0) angle += 360;
     int newValue = qRound(angle / 360.0f * 255);
     setValue(newValue);
+}
+
+void CircularSlider::setProgressColor(const QColor &color)
+{
+    progressColor = color;
+    update(); // yeniden çiz
 }

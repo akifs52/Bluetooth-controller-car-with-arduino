@@ -57,12 +57,13 @@ void joypad::paintEvent(QPaintEvent *)
 void joypad::mousePressEvent(QMouseEvent *event)
 {
     mouseHeld = true;
+
     QPoint center(width() / 2, height() / 2);
     QPointF dir = event->pos() - center;
 
-    qreal maxOffset = qMin(width(), height()) / 2 * 0.5;
-    if (dir.manhattanLength() > maxOffset) {
-        dir = dir / std::sqrt(dir.x()*dir.x() + dir.y()*dir.y()) * maxOffset;
+    qreal maxOffset = qMin(width(), height()) / 2 * 0.6;
+    if (QLineF(0, 0, dir.x(), dir.y()).length() > maxOffset) {
+        dir = dir / std::sqrt(dir.x() * dir.x() + dir.y() * dir.y()) * maxOffset;
     }
 
     redDotOffset = dir;
@@ -70,7 +71,7 @@ void joypad::mousePressEvent(QMouseEvent *event)
     // Yön belirleme
     QLineF vector(center, event->pos());
     if (vector.length() >= 20) {
-        qreal angle = vector.angle();
+        qreal angle = vector.angle(); // derece cinsinden (0-360)
         QString dirStr;
         if (angle >= 45 && angle < 135)
             dirStr = "U";
@@ -84,7 +85,7 @@ void joypad::mousePressEvent(QMouseEvent *event)
         pressedDirection = dirStr;
         emit directionPressed(dirStr);
 
-        // Highlight'ı 200ms sonra temizle
+        // Highlight 200ms sonra temizlensin
         QTimer::singleShot(200, this, [this]() {
             pressedDirection.clear();
             update();
@@ -100,10 +101,15 @@ void joypad::mouseMoveEvent(QMouseEvent *event)
 
     QPointF center(width() / 2, height() / 2);
     QPointF delta = event->pos() - center;
+
+    qreal maxOffset = qMin(width(), height()) / 2 * 0.6;
+    if (QLineF(0, 0, delta.x(), delta.y()).length() > maxOffset) {
+        delta = delta / std::sqrt(delta.x() * delta.x() + delta.y() * delta.y()) * maxOffset;
+    }
+
     redDotOffset = delta;
 
     QString direction;
-
     if (qAbs(delta.x()) > qAbs(delta.y())) {
         direction = (delta.x() > 0) ? "R" : "L";
     } else {
@@ -111,8 +117,7 @@ void joypad::mouseMoveEvent(QMouseEvent *event)
     }
 
     emit directionPressed(direction);
-
-    update(); // joystick’i yeniden çiz
+    update();
 }
 
 void joypad::mouseReleaseEvent(QMouseEvent *)

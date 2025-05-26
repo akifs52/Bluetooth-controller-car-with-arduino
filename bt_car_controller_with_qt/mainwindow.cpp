@@ -3,7 +3,9 @@
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceInfo>
 #include <QBluetoothServiceDiscoveryAgent>
-
+#include <QTimer>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->verticalLayout_7->addWidget(normalSlider);
 
     ui->verticalLayout_8->addWidget(turnSlider);
+
+    turnSlider->setProgressColor(Qt::blue);
 
     connect(joypadWidget, &joypad::directionPressed,
             this, &MainWindow::handleJoypadDirection);
@@ -47,7 +51,9 @@ void MainWindow::on_connectBt_clicked()
 
     if(ui->stackedWidget->currentWidget() == ui->controlPage)
     {
-        ui->stackedWidget->setCurrentWidget(ui->BtListPage);
+        QWidget *fromPage = ui->stackedWidget->currentWidget();
+        QWidget *toPage = ui->BtListPage;
+        animatePageTransition(fromPage, toPage);
     }
 
     // Bluetooth tarayıcıyı başlat
@@ -90,7 +96,10 @@ void MainWindow::on_ControlButton_clicked()
 {
     if(ui->stackedWidget->currentWidget() == ui->BtListPage)
     {
-        ui->stackedWidget->setCurrentWidget(ui->controlPage);
+        QWidget *fromPage = ui->stackedWidget->currentWidget();
+        QWidget *toPage = ui->controlPage;
+        animatePageTransition(fromPage, toPage);
+
     }
 
 }
@@ -117,8 +126,16 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
     qDebug() << "[DEBUG] Yeni QBluetoothSocket oluşturuldu.";
 
     qDebug() << "[DEBUG] Sinyaller bağlanıyor...";
-    connect(socket, &QBluetoothSocket::connected, this, []() {
+    connect(socket, &QBluetoothSocket::connected, this, [this]() {
         qDebug() << "Bluetooth cihazına bağlanıldı.";
+
+        ui->connectBt->hide();
+
+        ui->DisconnectBt->show();
+
+        ui->disconnectedButton->hide();
+
+        ui->connectedButton->show();
     });
 
     connect(socket, &QBluetoothSocket::disconnected, this, []() {
@@ -159,13 +176,6 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
     discoveryAgent->setRemoteAddress(targetAddress);
     discoveryAgent->start();
 
-    ui->connectBt->hide();
-
-    ui->DisconnectBt->show();
-
-    ui->disconnectedButton->hide();
-
-    ui->connectedButton->show();
 
 }
 
@@ -310,3 +320,33 @@ void MainWindow::on_DisconnectBt_clicked()
     ui->disconnectedButton->show();
 }
 
+
+void MainWindow::animatePageTransition(QWidget *fromPage, QWidget *toPage)
+{
+    int width = ui->stackedWidget->width();
+
+    toPage->setGeometry(width, 0, width, ui->stackedWidget->height()); // yeni sayfayı sağdan başlat
+    ui->stackedWidget->addWidget(toPage);
+    toPage->show();
+
+    QPropertyAnimation *animFrom = new QPropertyAnimation(fromPage, "geometry");
+    animFrom->setDuration(300);
+    animFrom->setStartValue(fromPage->geometry());
+    animFrom->setEndValue(QRect(-width, 0, width, fromPage->height()));
+    animFrom->setEasingCurve(QEasingCurve::InOutQuad);
+
+    QPropertyAnimation *animTo = new QPropertyAnimation(toPage, "geometry");
+    animTo->setDuration(300);
+    animTo->setStartValue(toPage->geometry());
+    animTo->setEndValue(QRect(0, 0, width, toPage->height()));
+    animTo->setEasingCurve(QEasingCurve::InOutQuad);
+
+    animFrom->start(QAbstractAnimation::DeleteWhenStopped);
+    animTo->start(QAbstractAnimation::DeleteWhenStopped);
+
+    // Geçiş bitince stackedWidget'ta yeni sayfayı set et
+    connect(animTo, &QPropertyAnimation::finished, this, [=]() {
+        ui->stackedWidget->setCurrentWidget(toPage);
+        ui->stackedWidget->removeWidget(fromPage);
+    });
+}
