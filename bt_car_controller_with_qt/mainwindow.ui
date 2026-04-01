@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,6 +15,22 @@
   </property>
   <property name="windowTitle">
    <string>Car Controller</string>
+  </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow
+{
+	background-color: rgb(14, 14, 14);
+	color: rgb(255, 255, 255);
+}</string>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonStyle::ToolButtonIconOnly</enum>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -31,197 +50,15 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QFrame" name="frame_5">
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QFrame
-{
-	
-	background-color: rgb(176, 176, 176);
-	
-	border: 2px solid rgb(68, 68, 68);
-	
-	border-radius: 10px;
-}</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="spacing">
-        <number>3</number>
-       </property>
-       <property name="leftMargin">
-        <number>2</number>
-       </property>
-       <property name="topMargin">
-        <number>2</number>
-       </property>
-       <property name="rightMargin">
-        <number>2</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QPushButton" name="connectBt">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton
-{
-	border: 2px solid rgb(68, 68, 68);
-	
-	border-radius: 10px;
-}
-
-QPushButton:hover
-{
-	border: 2px solid rgb(255, 255, 255);
-	
-	border-radius: 10px;
-}
-
-QPushButton:pressed
-{
-	border: 2px solid rgb(255, 0, 0);
-	
-	border-radius: 10px;
-}</string>
-         </property>
-         <property name="text">
-          <string>Connect</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="DisconnectBt">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton
-{
-	border: 2px solid rgb(68, 68, 68);
-	
-	border-radius: 10px;
-}
-
-QPushButton:hover
-{
-	border: 2px solid rgb(255, 255, 255);
-	
-	border-radius: 10px;
-}
-
-QPushButton:pressed
-{
-	border: 2px solid rgb(255, 0, 0);
-	
-	border-radius: 10px;
-}</string>
-         </property>
-         <property name="text">
-          <string>Disconnect</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="ControlButton">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton
-{
-	border: 2px solid rgb(68, 68, 68);
-	
-	border-radius: 10px;
-}
-
-QPushButton:hover
-{
-	border: 2px solid rgb(255, 255, 255);
-	
-	border-radius: 10px;
-}
-
-QPushButton:pressed
-{
-	border: 2px solid rgb(255, 0, 0);
-	
-	border-radius: 10px;
-}</string>
-         </property>
-         <property name="text">
-          <string>Control</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Policy::Expanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="connectedButton">
-         <property name="text">
-          <string>Connected</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="disconnectedButton">
-         <property name="text">
-          <string>Disconnected</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
      <widget class="QFrame" name="frame">
       <property name="frameShape">
-       <enum>QFrame::Shape::StyledPanel</enum>
+       <enum>QFrame::Shape::NoFrame</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
@@ -241,14 +78,20 @@ QPushButton:pressed
        </property>
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
          <property name="styleSheet">
           <string notr="true">QStackedWidget
 {
-	
-	
-	background-color: rgb(250, 255, 199);
-
-	border : 2px solid rgb(68, 68, 68);
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(38, 38, 38);
 	border-radius: 10px;
 }</string>
          </property>
@@ -299,6 +142,9 @@ QPushButton:pressed
                  <property name="spacing">
                   <number>0</number>
                  </property>
+                 <property name="sizeConstraint">
+                  <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                 </property>
                  <property name="leftMargin">
                   <number>0</number>
                  </property>
@@ -312,17 +158,163 @@ QPushButton:pressed
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="label">
+                  <widget class="QFrame" name="topbar1">
                    <property name="maximumSize">
                     <size>
                      <width>16777215</width>
-                     <height>15</height>
+                     <height>40</height>
                     </size>
                    </property>
-                   <property name="text">
-                    <string>Joypad</string>
+                   <property name="styleSheet">
+                    <string notr="true">QFrame#topbar1 {
+    background: rgb(26, 26, 26);
+    border: 1px solid rgb(58, 58, 58);
+    border-radius: 8px;
+    margin: 2px;
+}</string>
                    </property>
+                   <property name="frameShape">
+                    <enum>QFrame::Shape::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Shadow::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_7">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="DisconnectBt">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>100</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton
+{
+	background-color: rgb(38, 38, 38);
+	color: rgb(255, 255, 255);
+	border: 2px solid rgb(58, 58, 58);
+	border-radius: 10px;
+	padding: 8px;
+}
+
+QPushButton:hover
+{
+	background-color: rgb(58, 58, 58);
+	border: 2px solid rgb(129, 236, 255);
+	color: rgb(129, 236, 255);
+}
+
+QPushButton:pressed
+{
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(255, 113, 108);
+	color: rgb(255, 113, 108);
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Disconnect</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="connectBt">
+                      <property name="minimumSize">
+                       <size>
+                        <width>20</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>100</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton
+{
+	background-color: rgb(38, 38, 38);
+	color: rgb(255, 255, 255);
+	border: 2px solid rgb(58, 58, 58);
+	border-radius: 10px;
+	padding: 8px;
+}
+
+QPushButton:hover
+{
+	background-color: rgb(58, 58, 58);
+	border: 2px solid rgb(129, 236, 255);
+	color: rgb(129, 236, 255);
+}
+
+QPushButton:pressed
+{
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(255, 113, 108);
+	color: rgb(255, 113, 108);
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Connect</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_2">
+                      <property name="orientation">
+                       <enum>Qt::Orientation::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Policy::Expanding</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
                   </widget>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Vertical</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Policy::Minimum</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </widget>
@@ -332,6 +324,9 @@ QPushButton:pressed
                 <layout class="QHBoxLayout" name="horizontalLayout_3">
                  <property name="spacing">
                   <number>0</number>
+                 </property>
+                 <property name="sizeConstraint">
+                  <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                  </property>
                  <property name="leftMargin">
                   <number>0</number>
@@ -380,23 +375,25 @@ QPushButton:pressed
                       <property name="styleSheet">
                        <string notr="true">QPushButton
 {
-	border: 2px solid rgb(68, 68, 68);
-	
+	background-color: rgb(38, 38, 38);
+	color: rgb(255, 255, 255);
+	border: 2px solid rgb(58, 58, 58);
 	border-radius: 10px;
+	padding: 8px;
 }
 
 QPushButton:hover
 {
-	border: 2px solid rgb(85, 170, 255);
-	
-	border-radius: 10px;
+	background-color: rgb(58, 58, 58);
+	border: 2px solid rgb(129, 236, 255);
+	color: rgb(129, 236, 255);
 }
 
 QPushButton:pressed
 {
-	border: 2px solid rgb(255, 0, 0);
-	
-	border-radius: 10px;
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(255, 113, 108);
+	color: rgb(255, 113, 108);
 }</string>
                       </property>
                       <property name="text">
@@ -436,23 +433,25 @@ QPushButton:pressed
                       <property name="styleSheet">
                        <string notr="true">QPushButton
 {
-	border: 2px solid rgb(68, 68, 68);
-	
+	background-color: rgb(38, 38, 38);
+	color: rgb(255, 255, 255);
+	border: 2px solid rgb(58, 58, 58);
 	border-radius: 10px;
+	padding: 8px;
 }
 
 QPushButton:hover
 {
-	border: 2px solid rgb(85, 170, 255);
-	
-	border-radius: 10px;
+	background-color: rgb(58, 58, 58);
+	border: 2px solid rgb(129, 236, 255);
+	color: rgb(129, 236, 255);
 }
 
 QPushButton:pressed
 {
-	border: 2px solid rgb(255, 0, 0);
-	
-	border-radius: 10px;
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(255, 113, 108);
+	color: rgb(255, 113, 108);
 }</string>
                       </property>
                       <property name="text">
@@ -471,23 +470,25 @@ QPushButton:pressed
                       <property name="styleSheet">
                        <string notr="true">QPushButton
 {
-	border: 2px solid rgb(68, 68, 68);
-	
+	background-color: rgb(38, 38, 38);
+	color: rgb(255, 255, 255);
+	border: 2px solid rgb(58, 58, 58);
 	border-radius: 10px;
+	padding: 8px;
 }
 
 QPushButton:hover
 {
-	border: 2px solid rgb(85, 170, 255);
-	
-	border-radius: 10px;
+	background-color: rgb(58, 58, 58);
+	border: 2px solid rgb(129, 236, 255);
+	color: rgb(129, 236, 255);
 }
 
 QPushButton:pressed
 {
-	border: 2px solid rgb(255, 0, 0);
-	
-	border-radius: 10px;
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(255, 113, 108);
+	color: rgb(255, 113, 108);
 }</string>
                       </property>
                       <property name="text">
@@ -527,23 +528,25 @@ QPushButton:pressed
                       <property name="styleSheet">
                        <string notr="true">QPushButton
 {
-	border: 2px solid rgb(68, 68, 68);
-	
+	background-color: rgb(38, 38, 38);
+	color: rgb(255, 255, 255);
+	border: 2px solid rgb(58, 58, 58);
 	border-radius: 10px;
+	padding: 8px;
 }
 
 QPushButton:hover
 {
-	border: 2px solid rgb(85, 170, 255);
-	
-	border-radius: 10px;
+	background-color: rgb(58, 58, 58);
+	border: 2px solid rgb(129, 236, 255);
+	color: rgb(129, 236, 255);
 }
 
 QPushButton:pressed
 {
-	border: 2px solid rgb(255, 0, 0);
-	
-	border-radius: 10px;
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(255, 113, 108);
+	color: rgb(255, 113, 108);
 }</string>
                       </property>
                       <property name="text">
@@ -600,12 +603,202 @@ QPushButton:pressed
                   <number>0</number>
                  </property>
                  <item>
+                  <widget class="QFrame" name="topbar2">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QFrame#topbar2 {
+    background: rgb(26, 26, 26);
+    border: 1px solid rgb(58, 58, 58);
+    border-radius: 8px;
+    margin: 2px;
+}
+
+/* Modern Battery Status Widget */
+#batteryContainer {
+    background: rgba(38, 38, 38, 0.8);
+    border: 1px solid rgba(129, 236, 255, 0.3);
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin: 2px;
+}
+
+#batteryIcon {
+    color: rgb(255, 255, 255);
+    font-size: 12px;
+    padding: 0 4px;
+}
+
+#batteryText {
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 10px;
+    padding: 0 4px;
+}
+
+#batteryBar {
+    min-width: 50px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+}
+
+#batteryBar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 75%;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
+        stop:0 rgb(129, 236, 255), 
+        stop:0.5 rgb(0, 212, 236), 
+        stop:1 rgb(129, 236, 255));
+    border-radius: 1px;
+}
+
+</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::Shape::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Shadow::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="batteryLayout">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <spacer name="horizontalSpacer_3">
+                      <property name="orientation">
+                       <enum>Qt::Orientation::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="connectionStatus">
+                      <property name="minimumSize">
+                       <size>
+                        <width>25</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>30</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="pixmap">
+                       <pixmap resource="img.qrc">:/images/img/icons8-bluetooth-50.png</pixmap>
+                      </property>
+                      <property name="scaledContents">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QFrame" name="frame_3">
+                      <property name="minimumSize">
+                       <size>
+                        <width>50</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>50</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="frameShape">
+                       <enum>QFrame::Shape::NoFrame</enum>
+                      </property>
+                      <property name="frameShadow">
+                       <enum>QFrame::Shadow::Plain</enum>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_8">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="Battery" name="batteryWidget" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>50</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QLabel" name="label_2">
                    <property name="maximumSize">
                     <size>
                      <width>16777215</width>
-                     <height>15</height>
+                     <height>16777215</height>
                     </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QLabel {
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+}</string>
                    </property>
                    <property name="text">
                     <string>Normal Speed</string>
@@ -638,8 +831,14 @@ QPushButton:pressed
                    <property name="maximumSize">
                     <size>
                      <width>16777215</width>
-                     <height>15</height>
+                     <height>16777215</height>
                     </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QLabel {
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+}</string>
                    </property>
                    <property name="text">
                     <string>Turn Speed</string>
@@ -655,7 +854,7 @@ QPushButton:pressed
           </layout>
          </widget>
          <widget class="QWidget" name="BtListPage">
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="spacing">
             <number>0</number>
            </property>
@@ -672,22 +871,158 @@ QPushButton:pressed
             <number>0</number>
            </property>
            <item>
+            <widget class="QFrame" name="frame_2">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="pushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>60</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton
+{
+	background-color: rgb(38, 38, 38);
+	color: rgb(255, 255, 255);
+	border: 2px solid rgb(58, 58, 58);
+	border-radius: 10px;
+	padding: 8px;
+}
+
+QPushButton:hover
+{
+	background-color: rgb(58, 58, 58);
+	border: 2px solid rgb(129, 236, 255);
+	color: rgb(129, 236, 255);
+}
+
+QPushButton:pressed
+{
+	background-color: rgb(26, 26, 26);
+	border: 2px solid rgb(255, 113, 108);
+	color: rgb(255, 113, 108);
+}</string>
+                </property>
+                <property name="text">
+                 <string>Back</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <widget class="QListWidget" name="BtListWidget">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="styleSheet">
-              <string notr="true"> QListWidget {
-        background: #ffffff;
-        border: 1px solid #ddd;
-    }
-    QListWidget::item {
+              <string notr="true">QListWidget {
+        background: rgb(26, 26, 26);
+        border: 1px solid rgb(58, 58, 58);
+        color: rgb(255, 255, 255);
+        border-radius: 12px;
         padding: 8px;
-        border-bottom: 1px solid #eee;
+        outline: none;
     }
+    
+    QListWidget::item {
+        background: rgb(38, 38, 38);
+        border: none;
+        border-radius: 8px;
+        margin: 2px 4px;
+        padding: 12px 16px;
+        color: rgb(255, 255, 255);
+        font-size: 14px;
+    }
+    
     QListWidget::item:hover {
-        background-color: #f5f5f5;
+        background: rgb(48, 48, 48);
+        border: 1px solid rgb(64, 156, 255);
     }
+    
     QListWidget::item:selected {
-        background-color: #4caf50;
-        color: white;
+        background: rgb(64, 156, 255);
+        color: rgb(255, 255, 255);
+        border: 1px solid rgb(64, 156, 255);
+    }
+    
+    QListWidget::item:selected:hover {
+        background: rgb(85, 167, 255);
+    }
+    
+    /* Scrollbar styling */
+    QListWidget QScrollBar:vertical {
+        background: rgb(38, 38, 38);
+        width: 12px;
+        border-radius: 6px;
+        margin: 0;
+    }
+    
+    QListWidget QScrollBar::handle:vertical {
+        background: rgb(58, 58, 58);
+        border-radius: 6px;
+        min-height: 20px;
+    }
+    
+    QListWidget QScrollBar::handle:vertical:hover {
+        background: rgb(78, 78, 78);
+    }
+    
+    QListWidget QScrollBar::add-line:vertical,
+    QListWidget QScrollBar::sub-line:vertical {
+        height: 0px;
     }</string>
              </property>
             </widget>
@@ -702,6 +1037,15 @@ QPushButton:pressed
    </layout>
   </widget>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>Battery</class>
+   <extends>QWidget</extends>
+   <header>battery.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="img.qrc"/>
+ </resources>
  <connections/>
 </ui>

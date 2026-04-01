@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "joypad.h"
+#include "circularslider.h"
+#include "battery.h"
 #include <QBluetoothLocalDevice>
 #include <QBluetoothDeviceInfo>
 #include <QBluetoothServiceDiscoveryAgent>
@@ -17,8 +20,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->connectedButton->hide();
-
     ui->DisconnectBt->hide();
 
     ui->verticalLayout_6->addWidget(joypadWidget);
@@ -28,6 +29,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->verticalLayout_8->addWidget(turnSlider);
 
     turnSlider->setProgressColor(Qt::blue);
+
+    // Timer'ı başlat
+    keyRepeatTimer = new QTimer(this);
+    keyRepeatTimer->setInterval(50); // 50ms arayla komut gönder
+    connect(keyRepeatTimer, &QTimer::timeout, this, &MainWindow::sendContinuousCommand);
 
     connect(joypadWidget, &joypad::directionPressed,
             this, &MainWindow::handleJoypadDirection);
@@ -92,17 +98,6 @@ void MainWindow::aramaTamamlandi()
     }
 }
 
-void MainWindow::on_ControlButton_clicked()
-{
-    if(ui->stackedWidget->currentWidget() == ui->BtListPage)
-    {
-        QWidget *fromPage = ui->stackedWidget->currentWidget();
-        QWidget *toPage = ui->controlPage;
-        animatePageTransition(fromPage, toPage);
-
-    }
-
-}
 
 void MainWindow::onSocketError(QBluetoothSocket::SocketError error)
 {
@@ -133,13 +128,33 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
 
         ui->DisconnectBt->show();
 
-        ui->disconnectedButton->hide();
+        updateBluetoothStatus(true);
 
-        ui->connectedButton->show();
     });
 
-    connect(socket, &QBluetoothSocket::disconnected, this, []() {
+    connect(socket, &QBluetoothSocket::disconnected, this, [this]() {
         qDebug() << "Bluetooth bağlantısı kesildi.";
+        updateBluetoothStatus(false);
+    });
+
+    // Socket'tan veri okuma
+    connect(socket, &QBluetoothSocket::readyRead, this, [this]() {
+        QByteArray data = socket->readAll();
+        QString receivedData = QString::fromUtf8(data).trimmed();
+        
+        // Boş veriyi ignore et
+        if (receivedData.isEmpty()) return;
+        
+        // Batarya verisini kontrol et
+        if (receivedData.contains("VOLT:") && receivedData.contains("BATT:")) {
+            parseBatteryData(receivedData);
+        }
+        
+        // Debug için sadece ilk 50 karakteri göster (çok log olmaması için)
+        QString debugData = receivedData.length() > 50 ? 
+                         receivedData.left(47) + "..." : 
+                         receivedData;
+        qDebug() << "[DATA] Gelen:" << debugData;
     });
 
 
@@ -185,8 +200,9 @@ void MainWindow::on_forwardButton_pressed()
 {
     if (socket && socket->isOpen()) {
         isControlling = true;
-        socket->write("F\n");
-        qDebug() << "[FORWARD] Gönderildi: F";
+        lastButtonDirection = "F";
+        keyRepeatTimer->start(100);
+        qDebug() << "[FORWARD] Button pressed - F";
     }
 }
 
@@ -194,8 +210,10 @@ void MainWindow::on_forwardButton_released()
 {
     if (socket && socket->isOpen()) {
         isControlling = false;
+        lastButtonDirection = "";
+        keyRepeatTimer->stop();
         socket->write("S\n");
-        qDebug() << "[STOP] Gönderildi: S";
+        qDebug() << "[FORWARD] Button released - STOP";
     }
 }
 
@@ -203,8 +221,9 @@ void MainWindow::on_backButton_pressed()
 {
     if (socket && socket->isOpen()) {
         isControlling = true;
-        socket->write("B\n");
-        qDebug() << "[BACKWARD] Gönderildi: B";
+        lastButtonDirection = "B";
+        keyRepeatTimer->start(100);
+        qDebug() << "[BACKWARD] Button pressed - B";
     }
 }
 
@@ -212,8 +231,10 @@ void MainWindow::on_backButton_released()
 {
     if (socket && socket->isOpen()) {
         isControlling = false;
+        lastButtonDirection = "";
+        keyRepeatTimer->stop();
         socket->write("S\n");
-        qDebug() << "[STOP] Gönderildi: S";
+        qDebug() << "[BACKWARD] Button released - STOP";
     }
 }
 
@@ -221,8 +242,9 @@ void MainWindow::on_rightButton_pressed()
 {
     if (socket && socket->isOpen()) {
         isControlling = true;
-        socket->write("R\n");
-        qDebug() << "[RIGHT] Gönderildi: R";
+        lastButtonDirection = "R";
+        keyRepeatTimer->start(100);
+        qDebug() << "[RIGHT] Button pressed - R";
     }
 }
 
@@ -230,8 +252,10 @@ void MainWindow::on_rightButton_released()
 {
     if (socket && socket->isOpen()) {
         isControlling = false;
+        lastButtonDirection = "";
+        keyRepeatTimer->stop();
         socket->write("S\n");
-        qDebug() << "[STOP] Gönderildi: S";
+        qDebug() << "[RIGHT] Button released - STOP";
     }
 }
 
@@ -239,8 +263,9 @@ void MainWindow::on_leftButton_pressed()
 {
     if (socket && socket->isOpen()) {
         isControlling = true;
-        socket->write("L\n");
-        qDebug() << "[LEFT] Gönderildi: L";
+        lastButtonDirection = "L";
+        keyRepeatTimer->start(100);
+        qDebug() << "[LEFT] Button pressed - L";
     }
 }
 
@@ -248,29 +273,36 @@ void MainWindow::on_leftButton_released()
 {
     if (socket && socket->isOpen()) {
         isControlling = false;
+        lastButtonDirection = "";
+        keyRepeatTimer->stop();
         socket->write("S\n");
-        qDebug() << "[STOP] Gönderildi: S";
+        qDebug() << "[LEFT] Button released - STOP";
     }
 }
 
 void MainWindow::handleJoypadDirection(const QString &direction)
 {
-
     if (!socket || !socket->isOpen()) {
         qDebug() << "[ERROR] Bluetooth soketi açık değil.";
         return;
     }
 
-    QByteArray komut;
-
-    if (direction == "U") { komut = "F\n"; isControlling = true; }
-    else if (direction == "D") { komut = "B\n"; isControlling = true; }
-    else if (direction == "L") { komut = "L\n"; isControlling = true; }
-    else if (direction == "R") { komut = "R\n"; isControlling = true; }
-    else { komut = "S\n"; isControlling = false; }
-
-    socket->write(komut);
-    qDebug() << "[Joypad] Komut gönderildi:" << komut;
+    lastJoystickDirection = direction;
+    
+    if (direction == "U" || direction == "D" || direction == "L" || direction == "R") {
+        isControlling = true;
+        if (!keyRepeatTimer->isActive()) {
+            keyRepeatTimer->start(50);
+        }
+    } else {
+        isControlling = false;
+        lastJoystickDirection = "";
+        keyRepeatTimer->stop();
+        socket->write("S\n");
+        qDebug() << "[Joypad] STOP gönderildi";
+    }
+    
+    qDebug() << "[Joypad] Yön değiştirildi:" << direction;
 }
 
 
@@ -316,8 +348,8 @@ void MainWindow::on_DisconnectBt_clicked()
 
     ui->connectBt->show();
     ui->DisconnectBt->hide();
-    ui->connectedButton->hide();
-    ui->disconnectedButton->show();
+    updateBluetoothStatus(false);
+
 }
 
 
@@ -349,4 +381,149 @@ void MainWindow::animatePageTransition(QWidget *fromPage, QWidget *toPage)
         ui->stackedWidget->setCurrentWidget(toPage);
         ui->stackedWidget->removeWidget(fromPage);
     });
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    if(ui->stackedWidget->currentWidget() == ui->BtListPage)
+    {
+        QWidget *fromPage = ui->stackedWidget->currentWidget();
+        QWidget *toPage = ui->controlPage;
+        animatePageTransition(fromPage, toPage);
+    }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->isAutoRepeat()) return; // Auto-repeat'i engelle
+    
+    if (socket && socket->isOpen()) {
+        switch (event->key()) {
+            case Qt::Key_W:
+            case Qt::Key_S:
+            case Qt::Key_A:
+            case Qt::Key_D:
+                isControlling = true;
+                keyIsPressed = true;
+                lastKey = static_cast<Qt::Key>(event->key()); // Qt6 enum conversion fix
+                keyRepeatTimer->start(50); // 50ms
+                break;
+            default:
+                QMainWindow::keyPressEvent(event);
+                break;
+        }
+    } else {
+        QMainWindow::keyPressEvent(event);
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->isAutoRepeat()) return; // Auto-repeat'i engelle
+    
+    if (socket && socket->isOpen()) {
+        switch (event->key()) {
+            case Qt::Key_W:
+            case Qt::Key_S:
+            case Qt::Key_A:
+            case Qt::Key_D:
+                isControlling = false;
+                keyIsPressed = false;
+                keyRepeatTimer->stop();
+                socket->write("S\n");
+                qDebug() << "[KEYBOARD] Key released - STOP";
+                break;
+            default:
+                QMainWindow::keyReleaseEvent(event);
+                break;
+        }
+    } else {
+        QMainWindow::keyReleaseEvent(event);
+    }
+}
+
+void MainWindow::sendContinuousCommand()
+{
+    if (!isControlling || !socket || !socket->isOpen()) return;
+
+    // Öncelik sırası: Klavye > Joystick > Buton
+    if (keyIsPressed && lastKey != Qt::Key_unknown) {
+        switch (lastKey) {
+            case Qt::Key_W: socket->write("F\n"); break;
+            case Qt::Key_S: socket->write("B\n"); break;
+            case Qt::Key_A: socket->write("L\n"); break;
+            case Qt::Key_D: socket->write("R\n"); break;
+            default: break;
+        }
+    }
+    else if (!lastJoystickDirection.isEmpty()) {
+        if (lastJoystickDirection == "U") socket->write("F\n");
+        else if (lastJoystickDirection == "D") socket->write("B\n");
+        else if (lastJoystickDirection == "L") socket->write("L\n");
+        else if (lastJoystickDirection == "R") socket->write("R\n");
+        else socket->write("S\n");
+    }
+    else if (!lastButtonDirection.isEmpty()) {
+        if (lastButtonDirection == "F") socket->write("F\n");
+        else if (lastButtonDirection == "B") socket->write("B\n");
+        else if (lastButtonDirection == "L") socket->write("L\n");
+        else if (lastButtonDirection == "R") socket->write("R\n");
+    }
+}
+
+void MainWindow::parseBatteryData(const QString &data)
+{
+    // Format: "VOLT:8.25V|BATT:75%"
+    // Birden fazla veri gelmiş olabilir, sonuncusunu al
+    QStringList lines = data.split("\n", Qt::SkipEmptyParts);
+    
+    for (const QString &line : lines) {
+        if (line.contains("VOLT:") && line.contains("BATT:")) {
+            QStringList parts = line.split("|");
+            
+            if (parts.size() >= 2) {
+                QString voltPart = parts[0].trimmed(); // "VOLT:8.25V"
+                QString battPart = parts[1].trimmed(); // "BATT:75%"
+                
+                // Voltajı çıkar ve doğrula
+                if (voltPart.startsWith("VOLT:") && voltPart.endsWith("V")) {
+                    QString voltageStr = voltPart.mid(5, voltPart.length() - 6);
+                    bool ok;
+                    float voltage = voltageStr.toFloat(&ok);
+                    
+                    if (ok && voltage >= 0.0 && voltage <= 10.0) {
+                        qDebug() << "[BATTERY] Voltaj:" << voltage << "V";
+                        
+                        // Şarj durumu tahmini (8.0V üzeri şarj olabilir)
+                        bool isCharging = (voltage >= 8.0);
+                        ui->batteryWidget->setCharging(isCharging);
+                    }
+                }
+                
+                // Yüzdeyi çıkar ve doğrula
+                if (battPart.startsWith("BATT:") && battPart.endsWith("%")) {
+                    QString percentageStr = battPart.mid(5, battPart.length() - 6);
+                    bool ok;
+                    int percentage = percentageStr.toInt(&ok);
+                    
+                    if (ok && percentage >= 0 && percentage <= 100) {
+                        // Batarya widget'ını güncelle
+                        ui->batteryWidget->setBatteryLevel(percentage);
+                        qDebug() << "[BATTERY] Yüzde:" << percentage << "%";
+                    }
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::updateBluetoothStatus(bool connected)
+{
+    if (connected) {
+        ui->connectionStatus->setPixmap(QPixmap(":/images/img/icons8-bluetooth-connected-50 (1).png"));
+        qDebug() << "[INFO] Bluetooth durumu: Bağlı";
+    } else {
+        ui->connectionStatus->setPixmap(QPixmap(":/images/img/icons8-bluetooth-50.png"));
+        qDebug() << "[INFO] Bluetooth durumu: Bağlı değil";
+    }
 }

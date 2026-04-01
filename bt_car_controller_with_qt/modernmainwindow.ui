@@ -1,0 +1,1063 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ModernMainWindow</class>
+ <widget class="QMainWindow" name="ModernMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>KINETIC_COMMAND | Dashboard</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #0e0e0e;
+    color: #ffffff;
+}
+
+/* Header Bar */
+#headerWidget {
+    background-color: #0e0e0e;
+    border-bottom: 1px solid #262626;
+    padding: 0px;
+}
+
+#titleLabel {
+    color: #81ecff;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Space Grotesk';
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+#connectButton {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #81ecff, stop:1 #00d4ec);
+    color: #003840;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: 'Space Grotesk';
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+#connectButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #a1ffff, stop:1 #20f4ff);
+}
+
+#connectButton:pressed {
+    transform: scale(0.95);
+}
+
+/* Side Navigation */
+#sideNav {
+    background-color: #1a1a1a;
+    border-right: 1px solid #262626;
+    padding: 0px;
+}
+
+#systemTitle {
+    color: #81ecff;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Space Grotesk';
+}
+
+#systemVersion {
+    color: #adaaaa;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.navButton {
+    background-color: transparent;
+    border: none;
+    padding: 12px 24px;
+    text-align: left;
+    color: #adaaaa;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 0px;
+}
+
+.navButton:hover {
+    background-color: #262626;
+    color: #81ecff;
+}
+
+.navButton.active {
+    background-color: rgba(129, 236, 255, 0.1);
+    color: #81ecff;
+    border-left: 4px solid #81ecff;
+}
+
+#emergencyStopButton {
+    background-color: #9f0519;
+    color: #ffa8a3;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-weight: bold;
+    font-family: 'Space Grotesk';
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#emergencyStopButton:hover {
+    background-color: #bf0620;
+}
+
+/* Main Content Area */
+#mainContent {
+    background-color: #0e0e0e;
+    padding: 24px;
+}
+
+/* Joystick Container */
+#joystickContainer {
+    background-color: #262626;
+    border-radius: 20px;
+    padding: 16px;
+}
+
+#joystickWidget {
+    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 #1a1a1a, stop:1 #000000);
+    border-radius: 160px;
+    border: 2px solid #333333;
+}
+
+/* D-Pad Controls */
+#dpadContainer {
+    background-color: #1a1a1a;
+    border-radius: 24px;
+    padding: 16px;
+    border: 1px solid rgba(118, 117, 117, 0.1);
+}
+
+.dpadButton {
+    background-color: #262626;
+    border: none;
+    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    color: #ffffff;
+    font-size: 24px;
+}
+
+.dpadButton:hover {
+    background-color: #81ecff;
+    color: #003840;
+}
+
+.dpadButton:pressed {
+    transform: scale(0.95);
+}
+
+#centerButton {
+    background-color: #000000;
+    border: none;
+}
+
+/* Gauge Containers */
+.gaugeContainer {
+    background-color: #1a1a1a;
+    border-radius: 32px;
+    padding: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gaugeTitle {
+    color: #adaaaa;
+    font-size: 14px;
+    font-family: 'Space Grotesk';
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+}
+
+.gaugeValue {
+    color: #ffffff;
+    font-size: 48px;
+    font-weight: bold;
+    font-family: 'Space Grotesk';
+}
+
+.gaugeUnit {
+    color: #adaaaa;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gaugeLimit {
+    color: #ffffff;
+    font-size: 20px;
+    font-family: 'Space Grotesk';
+}
+
+.gaugeStatus {
+    color: #81ecff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Status Cards */
+.statusCard {
+    background-color: #131313;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(118, 117, 117, 0.1);
+}
+
+.statusLabel {
+    color: #767575;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.statusValue {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Space Grotesk';
+}
+
+.progressBar {
+    background-color: #262626;
+    border-radius: 4px;
+    height: 4px;
+}
+
+.progressFill {
+    background-color: #81ecff;
+    border-radius: 4px;
+}
+
+/* Mobile Bottom Nav */
+#bottomNav {
+    background-color: rgba(14, 14, 14, 0.9);
+    border-top: 1px solid #262626;
+    border-radius: 16px 16px 0px 0px;
+}
+
+.bottomNavButton {
+    background-color: transparent;
+    border: none;
+    padding: 8px 16px;
+    color: #adaaaa;
+    border-radius: 12px;
+}
+
+.bottomNavButton.active {
+    background-color: rgba(129, 236, 255, 0.1);
+    color: #81ecff;
+}
+
+.bottomNavButton:hover {
+    color: #ffffff;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="mainHorizontalLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QWidget" name="sideNav">
+      <property name="maximumSize">
+       <size>
+        <width>256</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <layout class="QVBoxLayout" name="sideNavLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>96</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="systemInfoWidget">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>80</height>
+          </size>
+         </property>
+         <layout class="QVBoxLayout" name="systemInfoLayout">
+          <property name="leftMargin">
+           <number>24</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>24</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="systemTitle">
+            <property name="text">
+             <string>System Alpha</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="systemVersion">
+            <property name="text">
+             <string>V8-Kinetic-Core</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="navButtonsWidget">
+         <layout class="QVBoxLayout" name="navButtonsLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="dashboardButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumHeight">
+             <number>48</number>
+            </property>
+            <property name="text">
+             <string>⚡ Dashboard</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="discoveryButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumHeight">
+             <number>48</number>
+            </property>
+            <property name="text">
+             <string>🔍 Discovery</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="telemetryButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumHeight">
+             <number>48</number>
+            </property>
+            <property name="text">
+             <string>📊 Telemetry</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="logsButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumHeight">
+             <number>48</number>
+            </property>
+            <property name="text">
+             <string>📋 Logs</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="emergencyStopButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumHeight">
+          <number>64</number>
+         </property>
+         <property name="text">
+          <string>🛑 Emergency Stop</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="mainContent">
+      <layout class="QVBoxLayout" name="mainContentLayout">
+       <property name="spacing">
+        <number>32</number>
+       </property>
+       <property name="leftMargin">
+        <number>24</number>
+       </property>
+       <property name="topMargin">
+        <number>96</number>
+       </property>
+       <property name="rightMargin">
+        <number>24</number>
+       </property>
+       <property name="bottomMargin">
+        <number>32</number>
+       </property>
+       <item>
+        <widget class="QStackedWidget" name="stackedWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="dashboardPage">
+          <layout class="QHBoxLayout" name="dashboardLayout">
+           <property name="spacing">
+            <number>32</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="leftPanel">
+             <layout class="QVBoxLayout" name="leftPanelLayout">
+              <property name="spacing">
+               <number>48</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="joystickContainer">
+                <property name="minimumSize">
+                 <size>
+                  <width>320</width>
+                  <height>320</height>
+                 </size>
+                </property>
+                <layout class="QVBoxLayout" name="joystickContainerLayout">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QWidget" name="joystickWidget" native="true">
+                   <property name="minimumSize">
+                    <size>
+                     <width>288</width>
+                     <height>288</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="dpadContainer">
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <layout class="QGridLayout" name="dpadLayout">
+                 <property name="spacing">
+                  <number>12</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>16</number>
+                 </property>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="forwardButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>64</width>
+                     <height>64</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>↑</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="leftButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>64</width>
+                     <height>64</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>←</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QWidget" name="centerButton" native="true">
+                   <property name="minimumSize">
+                    <size>
+                     <width>64</width>
+                     <height>64</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QPushButton" name="rightButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>64</width>
+                     <height>64</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>→</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QPushButton" name="backButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>64</width>
+                     <height>64</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>↓</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="rightPanel">
+             <layout class="QGridLayout" name="rightPanelLayout">
+              <property name="spacing">
+               <number>32</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QWidget" name="normalSpeedGauge">
+                <property name="minimumSize">
+                 <size>
+                  <width>280</width>
+                  <height>320</height>
+                 </size>
+                </property>
+                <layout class="QVBoxLayout" name="normalSpeedGaugeLayout">
+                 <item>
+                  <widget class="QLabel" name="normalSpeedTitle">
+                   <property name="text">
+                    <string>Normal Speed</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="normalSpeedGaugeWidget" native="true">
+                   <property name="minimumSize">
+                    <size>
+                     <width>224</width>
+                     <height>224</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="normalSpeedInfoLayout">
+                   <item>
+                    <widget class="QWidget" name="normalSpeedLimitWidget">
+                     <layout class="QVBoxLayout" name="normalSpeedLimitLayout">
+                      <property name="spacing">
+                       <number>4</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="normalSpeedLimitLabel">
+                        <property name="text">
+                         <string>Limit</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="normalSpeedLimitValue">
+                        <property name="text">
+                         <string>120.0</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QWidget" name="normalSpeedStatusWidget">
+                     <layout class="QVBoxLayout" name="normalSpeedStatusLayout">
+                      <property name="spacing">
+                       <number>4</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="normalSpeedStatusLabel">
+                        <property name="text">
+                         <string>Status</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="normalSpeedStatusValue">
+                        <property name="text">
+                         <string>NOMINAL</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QWidget" name="turnSpeedGauge">
+                <property name="minimumSize">
+                 <size>
+                  <width>280</width>
+                  <height>320</height>
+                 </size>
+                </property>
+                <layout class="QVBoxLayout" name="turnSpeedGaugeLayout">
+                 <item>
+                  <widget class="QLabel" name="turnSpeedTitle">
+                   <property name="text">
+                    <string>Turn Speed</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="turnSpeedGaugeWidget" native="true">
+                   <property name="minimumSize">
+                    <size>
+                     <width>224</width>
+                     <height>224</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="turnSpeedInfoLayout">
+                   <item>
+                    <widget class="QWidget" name="turnSpeedLimitWidget">
+                     <layout class="QVBoxLayout" name="turnSpeedLimitLayout">
+                      <property name="spacing">
+                       <number>4</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="turnSpeedLimitLabel">
+                        <property name="text">
+                         <string>Max Yaw</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="turnSpeedLimitValue">
+                        <property name="text">
+                         <string>45.2</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_2">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QWidget" name="turnSpeedStatusWidget">
+                     <layout class="QVBoxLayout" name="turnSpeedStatusLayout">
+                      <property name="spacing">
+                       <number>4</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="turnSpeedStatusLabel">
+                        <property name="text">
+                         <string>Stability</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="turnSpeedStatusValue">
+                        <property name="text">
+                         <string>ACTIVE</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="QWidget" name="statusCardsContainer">
+                <layout class="QGridLayout" name="statusCardsLayout">
+                 <property name="spacing">
+                  <number>16</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QWidget" name="batteryCard">
+                   <layout class="QVBoxLayout" name="batteryCardLayout">
+                    <property name="spacing">
+                     <number>8</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="batteryLabel">
+                      <property name="text">
+                       <string>Battery</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="batteryProgressLayout">
+                      <item>
+                       <widget class="QProgressBar" name="batteryProgressBar">
+                        <property name="value">
+                         <number>75</number>
+                        </property>
+                        <property name="textVisible">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="batteryValue">
+                        <property name="text">
+                         <string>75%</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QWidget" name="signalCard">
+                   <layout class="QVBoxLayout" name="signalCardLayout">
+                    <property name="spacing">
+                     <number>8</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="signalLabel">
+                      <property name="text">
+                       <string>Signal</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="signalBarsLayout">
+                      <item>
+                       <widget class="QWidget" name="signalBarsWidget" native="true">
+                        <property name="minimumSize">
+                         <size>
+                          <width>40</width>
+                          <height>16</height>
+                         </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="signalValue">
+                        <property name="text">
+                         <string>-42dB</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QWidget" name="tempCard">
+                   <layout class="QVBoxLayout" name="tempCardLayout">
+                    <property name="spacing">
+                     <number>8</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="tempLabel">
+                      <property name="text">
+                       <string>Temp</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="tempValueLayout">
+                      <item>
+                       <widget class="QLabel" name="tempValue">
+                        <property name="text">
+                         <string>32°C</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="tempStatus">
+                        <property name="text">
+                         <string>SAFE</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QWidget" name="uptimeCard">
+                   <layout class="QVBoxLayout" name="uptimeCardLayout">
+                    <property name="spacing">
+                     <number>8</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="uptimeLabel">
+                      <property name="text">
+                       <string>Uptime</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="uptimeValue">
+                      <property name="text">
+                       <string>04:12:09</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="discoveryPage">
+          <layout class="QVBoxLayout" name="discoveryPageLayout">
+           <item>
+            <widget class="QListWidget" name="BtListWidget"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="telemetryPage">
+          <layout class="QVBoxLayout" name="telemetryPageLayout">
+           <item>
+            <widget class="QLabel" name="telemetryPlaceholderLabel">
+             <property name="text">
+              <string>Telemetry Page - Coming Soon</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="logsPage">
+          <layout class="QVBoxLayout" name="logsPageLayout">
+           <item>
+            <widget class="QLabel" name="logsPlaceholderLabel">
+             <property name="text">
+              <string>Logs Page - Coming Soon</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

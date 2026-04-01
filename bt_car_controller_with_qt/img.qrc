@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>img/icons8-battery (1).gif</file>
+        <file>img/icons8-bluetooth-48.png</file>
+        <file>img/icons8-bluetooth-connected-48.png</file>
+        <file>img/icons8-bluetooth-50.png</file>
+        <file>img/icons8-bluetooth-connected-50 (1).png</file>
+    </qresource>
+</RCC>

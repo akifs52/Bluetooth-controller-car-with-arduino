@@ -7,7 +7,7 @@
 joypad::joypad(QWidget *parent)
     : QWidget{parent}
 {
-    setMinimumSize(200, 200);
+    setMinimumSize(160, 160);
 }
 
 void joypad::paintEvent(QPaintEvent *)
@@ -51,7 +51,7 @@ void joypad::paintEvent(QPaintEvent *)
     // Kırmızı top (joystick ucu)
     QPointF redDotPos = center + redDotOffset;
     p.setBrush(Qt::red);
-    p.drawEllipse(redDotPos, 6, 6);
+    p.drawEllipse(redDotPos, 12, 12);
 }
 
 void joypad::mousePressEvent(QMouseEvent *event)
