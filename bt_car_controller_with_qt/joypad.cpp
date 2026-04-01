@@ -1,30 +1,35 @@
-#include "joypad.h"
+﻿#include "joypad.h"
 #include "qpainter.h"
 #include "QtMath"
 #include <QTimer>
-
+#include <QTouchEvent>
 
 joypad::joypad(QWidget *parent)
     : QWidget{parent}
 {
     setMinimumSize(160, 160);
+    setAttribute(Qt::WA_AcceptTouchEvents);
+    setMouseTracking(true);
 }
 
 void joypad::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
+#ifdef Q_OS_ANDROID
+    p.setRenderHint(QPainter::Antialiasing, false);
+    p.setRenderHint(QPainter::SmoothPixmapTransform, false);
+#else
     p.setRenderHint(QPainter::Antialiasing);
+#endif
 
     int w = width();
     int h = height();
     QPoint center(w / 2, h / 2);
     int radius = qMin(w, h) / 2 - 10;
 
-    // Dış daire (joystick tabanı)
     p.setBrush(QColor(40, 40, 40));
     p.drawEllipse(center, radius, radius);
 
-    // Yön vurgusu
     auto drawDirectionHighlight = [&](const QString &dir, double angleDeg) {
         if (pressedDirection == dir) {
             QPointF dirVec(qCos(qDegreesToRadians(angleDeg)), -qSin(qDegreesToRadians(angleDeg)));
@@ -39,7 +44,6 @@ void joypad::paintEvent(QPaintEvent *)
     drawDirectionHighlight("D", 270);
     drawDirectionHighlight("L", 180);
 
-    // Vidalama yerleri
     p.setBrush(QColor(80, 80, 80));
     for (int i = 0; i < 4; ++i) {
         double angle = i * M_PI_2;
@@ -48,7 +52,6 @@ void joypad::paintEvent(QPaintEvent *)
         p.drawEllipse(QPoint(boltX, boltY), 5, 5);
     }
 
-    // Kırmızı top (joystick ucu)
     QPointF redDotPos = center + redDotOffset;
     p.setBrush(Qt::red);
     p.drawEllipse(redDotPos, 12, 12);
@@ -56,22 +59,64 @@ void joypad::paintEvent(QPaintEvent *)
 
 void joypad::mousePressEvent(QMouseEvent *event)
 {
+    handlePress(event->pos());
+}
+
+void joypad::mouseMoveEvent(QMouseEvent *event)
+{
+    handleMove(event->pos());
+}
+
+void joypad::mouseReleaseEvent(QMouseEvent *)
+{
+    handleRelease();
+}
+
+bool joypad::event(QEvent *event)
+{
+    switch (event->type()) {
+        case QEvent::TouchBegin:
+        case QEvent::TouchUpdate: {
+            auto *touch = static_cast<QTouchEvent *>(event);
+            if (touch->points().isEmpty())
+                break;
+            const QPointF pos = touch->points().first().position();
+            if (event->type() == QEvent::TouchBegin)
+                handlePress(pos);
+            else
+                handleMove(pos);
+            event->accept();
+            return true;
+        }
+        case QEvent::TouchEnd:
+        case QEvent::TouchCancel:
+            handleRelease();
+            event->accept();
+            return true;
+        default:
+            break;
+    }
+
+    return QWidget::event(event);
+}
+
+void joypad::handlePress(const QPointF &pos)
+{
     mouseHeld = true;
 
-    QPoint center(width() / 2, height() / 2);
-    QPointF dir = event->pos() - center;
+    QPointF center(width() / 2.0, height() / 2.0);
+    QPointF dir = pos - center;
 
-    qreal maxOffset = qMin(width(), height()) / 2 * 0.6;
-    if (QLineF(0, 0, dir.x(), dir.y()).length() > maxOffset) {
+    qreal maxOffset = qMin(width(), height()) / 2.0 * 0.6;
+    if (QLineF(QPointF(0, 0), dir).length() > maxOffset) {
         dir = dir / std::sqrt(dir.x() * dir.x() + dir.y() * dir.y()) * maxOffset;
     }
 
     redDotOffset = dir;
 
-    // Yön belirleme
-    QLineF vector(center, event->pos());
+    QLineF vector(center, pos);
     if (vector.length() >= 20) {
-        qreal angle = vector.angle(); // derece cinsinden (0-360)
+        qreal angle = vector.angle();
         QString dirStr;
         if (angle >= 45 && angle < 135)
             dirStr = "U";
@@ -85,7 +130,6 @@ void joypad::mousePressEvent(QMouseEvent *event)
         pressedDirection = dirStr;
         emit directionPressed(dirStr);
 
-        // Highlight 200ms sonra temizlensin
         QTimer::singleShot(200, this, [this]() {
             pressedDirection.clear();
             update();
@@ -95,15 +139,16 @@ void joypad::mousePressEvent(QMouseEvent *event)
     update();
 }
 
-void joypad::mouseMoveEvent(QMouseEvent *event)
+void joypad::handleMove(const QPointF &pos)
 {
-    if (!mouseHeld) return;
+    if (!mouseHeld)
+        return;
 
-    QPointF center(width() / 2, height() / 2);
-    QPointF delta = event->pos() - center;
+    QPointF center(width() / 2.0, height() / 2.0);
+    QPointF delta = pos - center;
 
-    qreal maxOffset = qMin(width(), height()) / 2 * 0.6;
-    if (QLineF(0, 0, delta.x(), delta.y()).length() > maxOffset) {
+    qreal maxOffset = qMin(width(), height()) / 2.0 * 0.6;
+    if (QLineF(QPointF(0, 0), delta).length() > maxOffset) {
         delta = delta / std::sqrt(delta.x() * delta.x() + delta.y() * delta.y()) * maxOffset;
     }
 
@@ -120,10 +165,10 @@ void joypad::mouseMoveEvent(QMouseEvent *event)
     update();
 }
 
-void joypad::mouseReleaseEvent(QMouseEvent *)
+void joypad::handleRelease()
 {
     mouseHeld = false;
-    redDotOffset = QPointF(0, 0); // merkeze dön
-    emit directionPressed("S"); // stop sinyali gönder
+    redDotOffset = QPointF(0, 0);
+    emit directionPressed("S");
     update();
 }

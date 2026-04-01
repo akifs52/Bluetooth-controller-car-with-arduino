@@ -29,7 +29,17 @@ void Battery::setBatteryLevel(int level)
     if (m_batteryLevel != level) {
         m_batteryLevel = level;
         emit batteryLevelChanged(level);
+        
+        // Android için güncelleme sıklığını azalt
+        #ifdef Q_OS_ANDROID
+        static int lastUpdateLevel = -1;
+        if (abs(level - lastUpdateLevel) >= 5) { // Sadece %5 değişimde güncelle
+            update();
+            lastUpdateLevel = level;
+        }
+        #else
         update(); // Widget'ı yeniden çiz
+        #endif
     }
 }
 
@@ -43,7 +53,17 @@ void Battery::setCharging(bool charging)
     if (m_isCharging != charging) {
         m_isCharging = charging;
         emit chargingChanged(charging);
+        
+        // Android için güncelleme sıklığını azalt
+        #ifdef Q_OS_ANDROID
+        static bool lastChargingState = false;
+        if (charging != lastChargingState) {
+            update();
+            lastChargingState = charging;
+        }
+        #else
         update(); // Widget'ı yeniden çiz
+        #endif
     }
 }
 
@@ -52,7 +72,13 @@ void Battery::paintEvent(QPaintEvent *event)
     Q_UNUSED(event)
     
     QPainter painter(this);
+    // Android için performans optimizasyonu
+    #ifdef Q_OS_ANDROID
+    painter.setRenderHint(QPainter::Antialiasing, false);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
+    #else
     painter.setRenderHint(QPainter::Antialiasing);
+    #endif
     
     // Batarya gövdesini çiz
     drawBatteryOutline(painter);

@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "joypad.h"
 #include "circularslider.h"
@@ -9,6 +9,12 @@
 #include <QTimer>
 #include <QPropertyAnimation>
 #include <QEasingCurve>
+
+// Android iÃ§in titreÅŸim desteÄŸi
+#ifdef Q_OS_ANDROID
+#include <QJniObject>
+#include <qnativeinterface.h>
+#endif
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,9 +36,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     turnSlider->setProgressColor(Qt::blue);
 
-    // Timer'ı başlat
+    // Timer'Ä± baÅŸlat
     keyRepeatTimer = new QTimer(this);
-    keyRepeatTimer->setInterval(50); // 50ms arayla komut gönder
+    keyRepeatTimer->setInterval(50); // 50ms arayla komut gÃ¶nder
     connect(keyRepeatTimer, &QTimer::timeout, this, &MainWindow::sendContinuousCommand);
 
     connect(joypadWidget, &joypad::directionPressed,
@@ -41,6 +47,55 @@ MainWindow::MainWindow(QWidget *parent)
     connect(normalSlider, &CircularSlider::valueChanged,this, &MainWindow::handleNormalSpeed);
 
     connect(turnSlider, &CircularSlider::valueChanged, this, &MainWindow::handleTurnSpeed);
+}
+
+// Android titreÅŸim fonksiyonu
+void MainWindow::triggerHapticFeedback()
+{
+#ifdef Q_OS_ANDROID
+    const int durationMs = 50;
+
+    const QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid())
+        return;
+
+    const QJniObject serviceName = QJniObject::getStaticObjectField(
+        "android/content/Context",
+        "VIBRATOR_SERVICE",
+        "Ljava/lang/String;");
+    if (!serviceName.isValid())
+        return;
+
+    const QJniObject vibrator = context.callObjectMethod(
+        "getSystemService",
+        "(Ljava/lang/String;)Ljava/lang/Object;",
+        serviceName.object<jstring>());
+    if (!vibrator.isValid())
+        return;
+
+    const jboolean hasVibrator = vibrator.callMethod<jboolean>("hasVibrator");
+    if (!hasVibrator)
+        return;
+
+    const int sdkVersion = QNativeInterface::QAndroidApplication::sdkVersion();
+    if (sdkVersion >= 26) {
+        const QJniObject effect = QJniObject::callStaticObjectMethod(
+            "android/os/VibrationEffect",
+            "createOneShot",
+            "(JI)Landroid/os/VibrationEffect;",
+            (jlong)durationMs,
+            (jint)-1);
+        if (effect.isValid()) {
+            vibrator.callMethod<void>(
+                "vibrate",
+                "(Landroid/os/VibrationEffect;)V",
+                effect.object());
+            return;
+        }
+    }
+
+    vibrator.callMethod<void>("vibrate", "(J)V", (jlong)durationMs);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -62,7 +117,7 @@ void MainWindow::on_connectBt_clicked()
         animatePageTransition(fromPage, toPage);
     }
 
-    // Bluetooth tarayıcıyı başlat
+    // Bluetooth tarayÄ±cÄ±yÄ± baÅŸlat
     discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
 
     connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
@@ -71,7 +126,7 @@ void MainWindow::on_connectBt_clicked()
             this, &MainWindow::aramaTamamlandi);
 
     discoveryAgent->start();
-    ui->BtListWidget->addItem("Cihazlar taranıyor...");
+    ui->BtListWidget->addItem("Cihazlar taranÄ±yor...");
 }
 
 void MainWindow::cihazBulundu(const QBluetoothDeviceInfo &info)
@@ -88,41 +143,41 @@ void MainWindow::cihazBulundu(const QBluetoothDeviceInfo &info)
 
 void MainWindow::aramaTamamlandi()
 {
-    // İlk satır "Cihazlar taranıyor..." idi, onu temizle
+    // Ä°lk satÄ±r "Cihazlar taranÄ±yor..." idi, onu temizle
     if (ui->BtListWidget->item(0)->text() == "Cihazlar taranıyor...") {
         delete ui->BtListWidget->takeItem(0);
     }
 
     if (ui->BtListWidget->count() == 0) {
-        ui->BtListWidget->addItem("Eşleştirilmiş cihaz bulunamadı.");
+        ui->BtListWidget->addItem("eşleştirilmiş cihaz bulunamadı.");
     }
 }
 
 
 void MainWindow::onSocketError(QBluetoothSocket::SocketError error)
 {
-    qDebug() << "Bluetooth bağlantı hatası:" << error;
+    qDebug() << "Bluetooth baÄŸlantÄ± hatasÄ±:" << error;
 }
 
 
 void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
 {
     QString deviceAddress = item->data(Qt::UserRole).toString();
-    qDebug() << "[DEBUG] Seçilen cihaz adresi:" << deviceAddress;
+    qDebug() << "[DEBUG] SeÃ§ilen cihaz adresi:" << deviceAddress;
 
     if (deviceAddress.isEmpty()) {
-        qDebug() << "[ERROR] Seçilen cihazın MAC adresi boş!";
+        qDebug() << "[ERROR] SeÃ§ilen cihazÄ±n MAC adresi boÅŸ!";
         return;
     }
 
 
-    // Yeni soket oluştur
+    // Yeni soket oluÅŸtur
     socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol, this);
-    qDebug() << "[DEBUG] Yeni QBluetoothSocket oluşturuldu.";
+    qDebug() << "[DEBUG] Yeni QBluetoothSocket oluÅŸturuldu.";
 
-    qDebug() << "[DEBUG] Sinyaller bağlanıyor...";
+    qDebug() << "[DEBUG] Sinyaller baÄŸlanÄ±yor...";
     connect(socket, &QBluetoothSocket::connected, this, [this]() {
-        qDebug() << "Bluetooth cihazına bağlanıldı.";
+        qDebug() << "Bluetooth cihazÄ±na baÄŸlanÄ±ldÄ±.";
 
         ui->connectBt->hide();
 
@@ -133,7 +188,7 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
     });
 
     connect(socket, &QBluetoothSocket::disconnected, this, [this]() {
-        qDebug() << "Bluetooth bağlantısı kesildi.";
+        qDebug() << "Bluetooth baÄŸlantÄ±sÄ± kesildi.";
         updateBluetoothStatus(false);
     });
 
@@ -142,7 +197,7 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
         QByteArray data = socket->readAll();
         QString receivedData = QString::fromUtf8(data).trimmed();
         
-        // Boş veriyi ignore et
+        // BoÅŸ veriyi ignore et
         if (receivedData.isEmpty()) return;
         
         // Batarya verisini kontrol et
@@ -150,7 +205,7 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
             parseBatteryData(receivedData);
         }
         
-        // Debug için sadece ilk 50 karakteri göster (çok log olmaması için)
+        // Debug iÃ§in sadece ilk 50 karakteri gÃ¶ster (Ã§ok log olmamasÄ± iÃ§in)
         QString debugData = receivedData.length() > 50 ? 
                          receivedData.left(47) + "..." : 
                          receivedData;
@@ -167,27 +222,27 @@ void MainWindow::on_BtListWidget_itemClicked(QListWidgetItem *item)
                 qDebug() << "Bulunan servis:" << service.serviceName()
                 << "UUID:" << service.serviceUuid().toString();
 
-                // Sadece RFCOMM protokolünü kullanan servisleri filtrele
+                // Sadece RFCOMM protokolÃ¼nÃ¼ kullanan servisleri filtrele
                 if (service.socketProtocol() == QBluetoothServiceInfo::RfcommProtocol) {
-                    qDebug() << "RFCOMM servisi bulundu, bağlanılıyor...";
+                    qDebug() << "RFCOMM servisi bulundu, baÄŸlanÄ±lÄ±yor...";
                     this->socket->connectToService(targetAddress, service.serviceUuid());
-                    discoveryAgent->stop();  // Bağlandıktan sonra keşfi durdur
+                    discoveryAgent->stop();  // BaÄŸlandÄ±ktan sonra keÅŸfi durdur
                 }
             });
 
     connect(discoveryAgent, &QBluetoothServiceDiscoveryAgent::finished,
             [discoveryAgent]() {
-                qDebug() << "Servis keşfi tamamlandı";
+                qDebug() << "Servis keÅŸfi tamamlandÄ±";
                 discoveryAgent->deleteLater();
             });
 
     connect(discoveryAgent, &QBluetoothServiceDiscoveryAgent::canceled,
             [discoveryAgent]() {
-                qDebug() << "Servis keşfi iptal edildi";
+                qDebug() << "Servis keÅŸfi iptal edildi";
                 discoveryAgent->deleteLater();
             });
 
-    // Keşfi başlat
+    // KeÅŸfi baÅŸlat
     discoveryAgent->setRemoteAddress(targetAddress);
     discoveryAgent->start();
 
@@ -202,6 +257,7 @@ void MainWindow::on_forwardButton_pressed()
         isControlling = true;
         lastButtonDirection = "F";
         keyRepeatTimer->start(100);
+        triggerHapticFeedback(); // Android titreÅŸim
         qDebug() << "[FORWARD] Button pressed - F";
     }
 }
@@ -223,6 +279,7 @@ void MainWindow::on_backButton_pressed()
         isControlling = true;
         lastButtonDirection = "B";
         keyRepeatTimer->start(100);
+        triggerHapticFeedback(); // Android titreÅŸim
         qDebug() << "[BACKWARD] Button pressed - B";
     }
 }
@@ -244,6 +301,7 @@ void MainWindow::on_rightButton_pressed()
         isControlling = true;
         lastButtonDirection = "R";
         keyRepeatTimer->start(100);
+        triggerHapticFeedback(); // Android titreÅŸim
         qDebug() << "[RIGHT] Button pressed - R";
     }
 }
@@ -265,6 +323,7 @@ void MainWindow::on_leftButton_pressed()
         isControlling = true;
         lastButtonDirection = "L";
         keyRepeatTimer->start(100);
+        triggerHapticFeedback(); // Android titreÅŸim
         qDebug() << "[LEFT] Button pressed - L";
     }
 }
@@ -283,26 +342,28 @@ void MainWindow::on_leftButton_released()
 void MainWindow::handleJoypadDirection(const QString &direction)
 {
     if (!socket || !socket->isOpen()) {
-        qDebug() << "[ERROR] Bluetooth soketi açık değil.";
+        qDebug() << "[ERROR] Bluetooth soketi aÃ§Ä±k deÄŸil.";
         return;
     }
 
-    lastJoystickDirection = direction;
-    
-    if (direction == "U" || direction == "D" || direction == "L" || direction == "R") {
-        isControlling = true;
-        if (!keyRepeatTimer->isActive()) {
-            keyRepeatTimer->start(50);
-        }
-    } else {
-        isControlling = false;
-        lastJoystickDirection = "";
-        keyRepeatTimer->stop();
-        socket->write("S\n");
-        qDebug() << "[Joypad] STOP gönderildi";
+    static QString lastDirection = "";
+    if (lastDirection != direction) {
+        triggerHapticFeedback(); // Android titreÅŸim (sadece yÃ¶n deÄŸiÅŸiminde)
+        lastDirection = direction;
     }
-    
-    qDebug() << "[Joypad] Yön değiştirildi:" << direction;
+
+    QByteArray komut;
+
+    if (direction == "U") { komut = "F\n"; isControlling = true; }
+    else if (direction == "D") { komut = "B\n"; isControlling = true; }
+    else if (direction == "L") { komut = "L\n"; isControlling = true; }
+    else if (direction == "R") { komut = "R\n"; isControlling = true; }
+    else { komut = "S\n"; isControlling = false; }
+
+    socket->write(komut);
+    qDebug() << "[Joypad] Komut gÃ¶nderildi:" << komut;
+
+    qDebug() << "[Joypad] YÃ¶n deÄŸiÅŸtirildi:" << direction;
 }
 
 
@@ -311,12 +372,13 @@ void MainWindow::handleNormalSpeed(int value)
     if (isControlling) return;
 
     if (!socket || !socket->isOpen()) {
-        qDebug() << "[ERROR] Bluetooth soketi yok/açık değil.";
+        qDebug() << "[ERROR] Bluetooth soketi yok/aÃ§Ä±k deÄŸil.";
         return;
     }
 
     qDebug() << "[Normal Speed]:" << value;
     socket->write(QString("N%1\n").arg(value).toUtf8());
+    triggerHapticFeedback(); // Android titreÅŸim
 }
 
 void MainWindow::handleTurnSpeed(int value)
@@ -324,12 +386,13 @@ void MainWindow::handleTurnSpeed(int value)
     if (isControlling) return;
 
     if (!socket || !socket->isOpen()) {
-        qDebug() << "[ERROR] Bluetooth soketi yok/açık değil.";
+        qDebug() << "[ERROR] Bluetooth soketi yok/aÃ§Ä±k deÄŸil.";
         return;
     }
 
     qDebug() << "[Turning Speed]:" << value;
     socket->write(QString("T%1\n").arg(value).toUtf8());
+    triggerHapticFeedback(); // Android titreÅŸim
 }
 
 
@@ -338,10 +401,10 @@ void MainWindow::on_DisconnectBt_clicked()
 {
     if (socket && socket->isOpen()) {
         socket->disconnectFromService();
-        qDebug() << "[INFO] Bluetooth bağlantısı kullanıcı tarafından kesildi.";
+        qDebug() << "[INFO] Bluetooth baÄŸlantÄ±sÄ± kullanÄ±cÄ± tarafÄ±ndan kesildi.";
 
     } else {
-        qDebug() << "[INFO] Zaten bağlı değil.";
+        qDebug() << "[INFO] Zaten baÄŸlÄ± deÄŸil.";
 
 
     }
@@ -357,7 +420,7 @@ void MainWindow::animatePageTransition(QWidget *fromPage, QWidget *toPage)
 {
     int width = ui->stackedWidget->width();
 
-    toPage->setGeometry(width, 0, width, ui->stackedWidget->height()); // yeni sayfayı sağdan başlat
+    toPage->setGeometry(width, 0, width, ui->stackedWidget->height()); // yeni sayfayÄ± saÄŸdan baÅŸlat
     ui->stackedWidget->addWidget(toPage);
     toPage->show();
 
@@ -376,7 +439,7 @@ void MainWindow::animatePageTransition(QWidget *fromPage, QWidget *toPage)
     animFrom->start(QAbstractAnimation::DeleteWhenStopped);
     animTo->start(QAbstractAnimation::DeleteWhenStopped);
 
-    // Geçiş bitince stackedWidget'ta yeni sayfayı set et
+    // GeÃ§iÅŸ bitince stackedWidget'ta yeni sayfayÄ± set et
     connect(animTo, &QPropertyAnimation::finished, this, [=]() {
         ui->stackedWidget->setCurrentWidget(toPage);
         ui->stackedWidget->removeWidget(fromPage);
@@ -446,7 +509,7 @@ void MainWindow::sendContinuousCommand()
 {
     if (!isControlling || !socket || !socket->isOpen()) return;
 
-    // Öncelik sırası: Klavye > Joystick > Buton
+    // Ã–ncelik sÄ±rasÄ±: Klavye > Joystick > Buton
     if (keyIsPressed && lastKey != Qt::Key_unknown) {
         switch (lastKey) {
             case Qt::Key_W: socket->write("F\n"); break;
@@ -474,7 +537,7 @@ void MainWindow::sendContinuousCommand()
 void MainWindow::parseBatteryData(const QString &data)
 {
     // Format: "VOLT:8.25V|BATT:75%"
-    // Birden fazla veri gelmiş olabilir, sonuncusunu al
+    // Birden fazla veri gelmiÅŸ olabilir, sonuncusunu al
     QStringList lines = data.split("\n", Qt::SkipEmptyParts);
     
     for (const QString &line : lines) {
@@ -485,7 +548,7 @@ void MainWindow::parseBatteryData(const QString &data)
                 QString voltPart = parts[0].trimmed(); // "VOLT:8.25V"
                 QString battPart = parts[1].trimmed(); // "BATT:75%"
                 
-                // Voltajı çıkar ve doğrula
+                // VoltajÄ± Ã§Ä±kar ve doÄŸrula
                 if (voltPart.startsWith("VOLT:") && voltPart.endsWith("V")) {
                     QString voltageStr = voltPart.mid(5, voltPart.length() - 6);
                     bool ok;
@@ -494,22 +557,22 @@ void MainWindow::parseBatteryData(const QString &data)
                     if (ok && voltage >= 0.0 && voltage <= 10.0) {
                         qDebug() << "[BATTERY] Voltaj:" << voltage << "V";
                         
-                        // Şarj durumu tahmini (8.0V üzeri şarj olabilir)
+                        // Åarj durumu tahmini (8.0V Ã¼zeri ÅŸarj olabilir)
                         bool isCharging = (voltage >= 8.0);
                         ui->batteryWidget->setCharging(isCharging);
                     }
                 }
                 
-                // Yüzdeyi çıkar ve doğrula
+                // YÃ¼zdeyi Ã§Ä±kar ve doÄŸrula
                 if (battPart.startsWith("BATT:") && battPart.endsWith("%")) {
                     QString percentageStr = battPart.mid(5, battPart.length() - 6);
                     bool ok;
                     int percentage = percentageStr.toInt(&ok);
                     
                     if (ok && percentage >= 0 && percentage <= 100) {
-                        // Batarya widget'ını güncelle
+                        // Batarya widget'Ä±nÄ± gÃ¼ncelle
                         ui->batteryWidget->setBatteryLevel(percentage);
-                        qDebug() << "[BATTERY] Yüzde:" << percentage << "%";
+                        qDebug() << "[BATTERY] YÃ¼zde:" << percentage << "%";
                     }
                 }
             }
@@ -521,9 +584,10 @@ void MainWindow::updateBluetoothStatus(bool connected)
 {
     if (connected) {
         ui->connectionStatus->setPixmap(QPixmap(":/images/img/icons8-bluetooth-connected-50 (1).png"));
-        qDebug() << "[INFO] Bluetooth durumu: Bağlı";
+        qDebug() << "[INFO] Bluetooth durumu: BaÄŸlÄ±";
     } else {
         ui->connectionStatus->setPixmap(QPixmap(":/images/img/icons8-bluetooth-50.png"));
-        qDebug() << "[INFO] Bluetooth durumu: Bağlı değil";
+        qDebug() << "[INFO] Bluetooth durumu: BaÄŸlÄ± deÄŸil";
     }
 }
+

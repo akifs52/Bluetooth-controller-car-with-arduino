@@ -93,6 +93,7 @@ private:
 
     void parseBatteryData(const QString &data); // Arduino'dan gelen batarya verisini işle
     void updateBluetoothStatus(bool connected); // Bluetooth bağlantı durumunu güncelle
+    void triggerHapticFeedback(); // Android titreşim fonksiyonu
 
 
 };
