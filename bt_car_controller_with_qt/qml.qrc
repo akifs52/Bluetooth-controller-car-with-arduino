@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml_bt_car/Main.qml</file>
+        <file>qml_bt_car/ControlPage.qml</file>
+        <file>qml_bt_car/BluetoothPage.qml</file>
+        <file>qml_bt_car/RGBPage.qml</file>
+        <file>qml_bt_car/Joystick.qml</file>
+        <file>qml_bt_car/Gauge.qml</file>
+        <file>qml_bt_car/fonts/Inter-Variable.ttf</file>
+        <file>qml_bt_car/fonts/MaterialIcons-Regular.ttf</file>
+    </qresource>
+</RCC>

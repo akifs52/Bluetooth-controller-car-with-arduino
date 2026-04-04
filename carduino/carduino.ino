@@ -1,3 +1,5 @@
+#include <SoftwareSerial.h>
+
 char command;
 int normalSpeed = 100;
 int turningSpeed = 100;
@@ -5,6 +7,11 @@ String inputString = "";
 
 // Batarya koruma bayrağı
 bool batteryCutoffActive = false;
+
+// SoftwareSerial için Bluetooth pinleri
+#define BT_TX 4  // Arduino TX -> Bluetooth RX
+#define BT_RX 5  // Arduino RX <- Bluetooth TX
+SoftwareSerial bluetooth(BT_RX, BT_TX);
 
 // Motor pinleri
 #define solMotorPos 7
@@ -18,7 +25,9 @@ bool batteryCutoffActive = false;
 #define BATTERY_PIN A0
 
 // Voltaj bölücü oranı: R2 / (R1 + R2) = 10 / 25 = 0.4
-#define DIVIDER_RATIO 0.4
+// Eğer 12.5V sabit çıkıyorsa ve gerçek voltaj 7V ise:
+// 7V / 12.5V = 0.56 (doğru oran)
+#define DIVIDER_RATIO 0.56
 
 // ADC referans voltajı
 #define REF_VOLTAGE 5.0
@@ -65,20 +74,23 @@ void clearBuffer() {
 // --------------------------------------------------------
 
 void setup() {
-  Serial.begin(9600); // HC-05 için 9600 baud
+  Serial.begin(115200); // Debug için 115200 baud
+  bluetooth.begin(9600); // HC-05 için 9600 baud
 
   pinMode(sagMotorPWM, OUTPUT);  // ENA (PWM)
   pinMode(sagMotorPos, OUTPUT);  // IN1
-  pinMode(sagMotorNeg, OUTPUT);  // IN2
+  pinMode(sagMotorNeg, OUTPUT);  // N2
   pinMode(solMotorPos, OUTPUT);  // IN3
   pinMode(solMotorNeg, OUTPUT);  // IN4
   pinMode(solMotorPWM, OUTPUT);  // ENB (PWM)
+  
+  Serial.println("Arduino başlatıldı - Bluetooth D4/D5");
 }
 
 void loop() {
-  // Seri porttan gelenleri buffer'a ekle
-  while (Serial.available()) {
-    char inChar = (char)Serial.read();
+  // Bluetooth'tan gelenleri buffer'a ekle
+  while (bluetooth.available()) {
+    char inChar = (char)bluetooth.read();
     if (inChar == '\n') {
       if (inputString.length() > 0) {
           char prefix = inputString.charAt(0);
@@ -188,9 +200,6 @@ void executeMovement(char command) {
 // Önceki okumayı sakla için
 float lastStableVoltage = 0.0;
 
-// Batarya koruma bayrağı
-bool batteryCutoffActive = false;
-
 float readBatteryVoltage() {
   float sum = 0;
   float minVal = 1023.0;
@@ -212,16 +221,28 @@ float readBatteryVoltage() {
   // Arduino pin voltajı
   float voltage = avg * (REF_VOLTAGE / 1023.0);
 
+  // DEBUG: Ham değerleri yazdır
+  Serial.print("DEBUG - Ham ADC: ");
+  Serial.print(avg);
+  Serial.print(", Pin Voltajı: ");
+  Serial.print(voltage, 3);
+  Serial.print("V, DIVIDER_RATIO: ");
+  Serial.print(DIVIDER_RATIO, 3);
+
   // Gerçek batarya voltajı
   float batteryVoltage = voltage / DIVIDER_RATIO;
+  
+  Serial.print(", Gerçek Batarya Voltajı: ");
+  Serial.print(batteryVoltage, 3);
+  Serial.println("V");
 
-  // Ani değişimleri yumuşat (low-pass filter)
-  if (lastStableVoltage > 0.0) {
-    float diff = abs(batteryVoltage - lastStableVoltage);
-    if (diff > 0.3) { // 0.3V'den fazla değişim varsa yumuşat
-      batteryVoltage = (lastStableVoltage * 0.7) + (batteryVoltage * 0.3);
-    }
-  }
+  // Low-pass filter geçici olarak devre dışı (debug için)
+  // if (lastStableVoltage > 0.0) {
+  //   float diff = abs(batteryVoltage - lastStableVoltage);
+  //   if (diff > 0.3) { // 0.3V'den fazla değişim varsa yumuşat
+  //     batteryVoltage = (lastStableVoltage * 0.7) + (batteryVoltage * 0.3);
+  //   }
+  // }
 
   lastStableVoltage = batteryVoltage;
   return batteryVoltage;
@@ -242,7 +263,7 @@ int getBatteryPercentage(float voltage) {
 void checkBatteryCutoff(float voltage) {
   // Batarya koruma cutoff - 6.3V altında sistemi kapat
   if (voltage < 6.3 && !batteryCutoffActive) {
-    Serial.println("LOW_BATTERY_CUTOFF");
+    bluetooth.println("LOW_BATTERY_CUTOFF");
     batteryCutoffActive = true;
     
     // Tüm motorları durdur
@@ -261,7 +282,7 @@ void checkBatteryCutoff(float voltage) {
   // Batarya yükselirse korumayı kaldır (6.5V üstü)
   else if (voltage > 6.5 && batteryCutoffActive) {
     batteryCutoffActive = false;
-    Serial.println("BATTERY_PROTECTION_RESET");
+    bluetooth.println("BATTERY_PROTECTION_RESET");
   }
 }
 
@@ -277,10 +298,10 @@ void sendBatteryStatus() {
     checkBatteryCutoff(voltage);
     
     // Qt uygulamasına batarya bilgisini gönder
-    Serial.print("VOLT:");
-    Serial.print(voltage, 2);
-    Serial.print("V|BATT:");
-    Serial.print(percentage);
-    Serial.println("%");
+    bluetooth.print("VOLT:");
+    bluetooth.print(voltage, 2);
+    bluetooth.print("V|BATT:");
+    bluetooth.print(percentage);
+    bluetooth.println("%");
   }
 }
