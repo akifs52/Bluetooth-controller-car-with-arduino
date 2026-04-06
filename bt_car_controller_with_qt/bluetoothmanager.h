@@ -107,6 +107,7 @@ signals:
     void devicesDiscovered(const QStringList &deviceNames);
     void devicesUpdated();
     void scanningChanged();
+    void dataReceived(const QString &data);  // Tüm Bluetooth verisi QML'e gider
 
 private:
     void handleDeviceDiscovered(const QBluetoothDeviceInfo &info);

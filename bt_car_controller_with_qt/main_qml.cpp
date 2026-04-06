@@ -7,6 +7,7 @@
 
 #include "bluetoothmanager.h"
 #include "androidpermissionmanager.h"
+#include "gamepadmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,9 +21,11 @@ int main(int argc, char *argv[])
 #endif
 
     BluetoothManager btManager;
+    GamepadManager gamepadManager;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("bluetoothManager"), &btManager);
+    engine.rootContext()->setContextProperty(QStringLiteral("gamepadManager"), &gamepadManager);
     
     // Otomatik cihaz taraması başlat
     btManager.startDiscovery();

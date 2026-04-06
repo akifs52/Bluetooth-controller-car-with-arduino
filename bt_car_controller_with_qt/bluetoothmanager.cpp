@@ -840,6 +840,9 @@ void BluetoothManager::parseIncomingData(const QString &receivedData)
 {
     qDebug() << "[DEBUG] Gelen veri:" << receivedData;
     
+    // Tüm veriyi QML'e gönder
+    emit dataReceived(receivedData);
+    
     if (receivedData.contains(QStringLiteral("VOLT:"))
         && receivedData.contains(QStringLiteral("BATT:"))) {
         qDebug() << "[DEBUG] Batarya verisi algılandı!";

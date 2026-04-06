@@ -6,11 +6,13 @@ CONFIG += c++17
 SOURCES += \
     main_qml.cpp \
     bluetoothmanager.cpp \
-    androidpermissionmanager.cpp
+    androidpermissionmanager.cpp \
+    gamepadmanager.cpp
 
 HEADERS += \
     bluetoothmanager.h \
-    androidpermissionmanager.h
+    androidpermissionmanager.h \
+    gamepadmanager.h
 
 RESOURCES += \
     qml.qrc
@@ -38,5 +40,11 @@ contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
 }
 
 win32 {
-    LIBS += -lws2_32 -lbthprops
+    LIBS += -lws2_32 -lbthprops -lxinput
+}
+
+android {
+    # Android için gamepad desteği (QGamepad alternatif)
+    QT += sensors
+    DEFINES += ANDROID_GAMEPAD_SUPPORT
 }

@@ -8,11 +8,13 @@ Flickable {
     property var theme
     property string iconFont: theme && theme.fontIcon ? theme.fontIcon : ""
     property var btManager
+    property var gamepadManager
 
     readonly property bool hasBtManager: btManager !== null && btManager !== undefined
     readonly property bool connected: hasBtManager ? btManager.isConnected : false
     readonly property int batteryLevel: hasBtManager ? btManager.batteryLevel : 75
     readonly property bool charging: hasBtManager ? btManager.isCharging : false
+    property real distanceValue: 999
     property int leftPwm: 100
     property int rightPwm: 100
 
@@ -20,6 +22,88 @@ Flickable {
     contentWidth: width
     contentHeight: contentColumn.implicitHeight + 40
     clip: true
+
+    // Bluetooth verisi geldiğinde mesafe verisini parse et
+    Connections {
+        target: btManager
+        function onDataReceived(data) {
+            console.log("[QML] Data received:", data)
+            // DIST:45.2cm formatını parse et
+            var distMatch = data.match(/DIST:([\d.]+)cm/)
+            if (distMatch) {
+                distanceValue = parseFloat(distMatch[1])
+                console.log("[QML] Distance updated to:", distanceValue)
+            } else {
+                console.log("[QML] No DIST match in:", data)
+            }
+        }
+    }
+
+    // Gamepad (PS4/Xbox) kontrolcü desteği
+    Connections {
+        target: gamepadManager !== null && gamepadManager !== undefined ? gamepadManager : null
+        enabled: gamepadManager !== null && gamepadManager !== undefined
+        function onDirectionChanged(direction) {
+            console.log("[QML] Gamepad signal received:", direction)
+            console.log("[QML] btManager exists:", btManager !== null, "connected:", btManager ? btManager.isConnected : false)
+            // Gamepad yön değişikliğini joystick ile senkronize et
+            if (joystick.currentDirection !== direction) {
+                console.log("[QML] Sending command to Arduino:", direction)
+                btManager.sendJoystickCommand(direction)
+                joystick.currentDirection = direction
+                console.log("[GAMEPAD] Controller direction:", direction)
+            }
+            // Joystick görsel konumunu güncelle
+            updateJoystickPosition(direction)
+        }
+        function onNormalSpeedChangeRequested(delta) {
+            var newValue = Math.max(0, Math.min(255, root.leftPwm + delta))
+            if (newValue !== root.leftPwm) {
+                root.leftPwm = newValue
+                leftPwmGauge.value = newValue  // Gauge'i zorla güncelle
+                btManager.sendNormalSpeed(newValue)
+                console.log("[GAMEPAD] Normal Speed changed by", delta, "to", newValue)
+            }
+        }
+        function onTurnSpeedChangeRequested(delta) {
+            var newValue = Math.max(0, Math.min(255, root.rightPwm + delta))
+            if (newValue !== root.rightPwm) {
+                root.rightPwm = newValue
+                rightPwmGauge.value = newValue  // Gauge'i zorla güncelle
+                btManager.sendTurnSpeed(newValue)
+                console.log("[GAMEPAD] Turn Speed changed by", delta, "to", newValue)
+            }
+        }
+    }
+
+    // Joystick görsel pozisyonunu yöne göre güncelle
+    function updateJoystickPosition(direction) {
+        // Yönü x/y koordinatlarına çevir (-0.6 ile 0.6 arası, tam uç değil)
+        var x = 0
+        var y = 0
+        
+        switch(direction) {
+            case "F": // İleri
+                y = -0.6
+                break
+            case "B": // Geri
+                y = 0.6
+                break
+            case "L": // Sol
+                x = -0.6
+                break
+            case "R": // Sağ
+                x = 0.6
+                break
+            case "S": // Stop
+            default:
+                x = 0
+                y = 0
+        }
+        
+        joystick.xAxis = x
+        joystick.yAxis = y
+    }
 
     Column {
         id: contentColumn
@@ -70,6 +154,46 @@ Flickable {
                                 font.pixelSize: 24
                                 font.weight: Font.Bold
                                 color: theme.textPrimary
+                            }
+                        }
+
+                        Item { Layout.fillWidth: true }
+
+                        // Mesafe Sensörü Göstergesi (Orta)
+                        Column {
+                            spacing: 6
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+
+                            Row {
+                                spacing: 6
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                
+                                Text {
+                                    text: "sensors"
+                                    font.family: iconFont
+                                    font.pixelSize: 14
+                                    color: theme.primary
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                
+                                Text {
+                                    text: distanceValue > 900 ? "---" : (distanceValue.toFixed(1) + " cm")
+                                    font.family: theme.fontHeadline
+                                    font.pixelSize: 20
+                                    font.weight: Font.DemiBold
+                                    color: distanceValue < 20 && distanceValue > 0 ? "#ff6b6b" : theme.primary
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            Text {
+                                text: "MESAFE"
+                                font.family: theme.fontHeadline
+                                font.pixelSize: 9
+                                font.letterSpacing: 2
+                                color: theme.textMuted
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.horizontalCenter: parent.horizontalCenter
                             }
                         }
 
@@ -185,14 +309,22 @@ Flickable {
                         hoverEnabled: true
                         onPressed: {
                             // Gauge'a basınca titreşim
-                            if (Qt.platform.os === "android") {
-                                Qt.vibrate(50) // 50ms titreşim
+                            try {
+                                if (Qt.platform.os === "android") {
+                                    Qt.vibrate(50) // 50ms titreşim
+                                }
+                            } catch(e) {
+                                console.log("ControlPage gauge press vibration error: " + e)
                             }
                         }
                         onReleased: {
                             // Gauge'dan basınca titreşim
-                            if (Qt.platform.os === "android") {
-                                Qt.vibrate(30) // 30ms titreşim
+                            try {
+                                if (Qt.platform.os === "android") {
+                                    Qt.vibrate(30) // 30ms titreşim
+                                }
+                            } catch(e) {
+                                console.log("ControlPage gauge release vibration error: " + e)
                             }
                         }
                         onClicked: {
@@ -258,12 +390,9 @@ Flickable {
                     labelColor: "#ff4d4f"
                     onValueEdited: {
                         root.leftPwm = value
-                        bluetoothManager.sendNormalSpeed(value)
+                        btManager.sendNormalSpeed(value)
                         console.log("Normal Speed:", value)
-                        // Gauge değerini değiştirince titreşim
-                        if (Qt.platform.os === "android") {
-                            Qt.vibrate(40) // 40ms titreşim
-                        }
+                        // Gauge değerini değiştirince titreşim KALDIRILDI - Bluetooth gönderimini engelliyordu
                     }
                 }
 
@@ -282,12 +411,9 @@ Flickable {
                     labelColor: theme.secondary
                     onValueEdited: {
                         root.rightPwm = value
-                        bluetoothManager.sendTurnSpeed(value)
+                        btManager.sendTurnSpeed(value)
                         console.log("Turn Speed:", value)
-                        // Gauge değerini değiştirince titreşim
-                        if (Qt.platform.os === "android") {
-                            Qt.vibrate(40) // 40ms titreşim
-                        }
+                        // Gauge değerini değiştirince titreşim KALDIRILDI - Bluetooth gönderimini engelliyordu
                     }
                 }
             }
@@ -310,6 +436,64 @@ Flickable {
                 Item {
                     width: parent.width
                     height: 300
+                    
+                    // Klavye desteği için focus ve key tracking
+                    focus: true
+                    property var activeKeys: ({})
+                    
+                    // Focus'u almak için tıklamayı kullan
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: parent.focus = true
+                    }
+                    
+                    Keys.onPressed: (event) => {
+                        var key = event.key
+                        if (key === Qt.Key_W || key === Qt.Key_A || 
+                            key === Qt.Key_S || key === Qt.Key_D) {
+                            activeKeys[key] = true
+                            updateJoystickFromKeys()
+                            event.accepted = true
+                        }
+                    }
+                    
+                    Keys.onReleased: (event) => {
+                        var key = event.key
+                        if (key === Qt.Key_W || key === Qt.Key_A || 
+                            key === Qt.Key_S || key === Qt.Key_D) {
+                            delete activeKeys[key]
+                            updateJoystickFromKeys()
+                            event.accepted = true
+                        }
+                    }
+                    
+                    function updateJoystickFromKeys() {
+                        var newDirection = "S"
+                        var hasW = activeKeys[Qt.Key_W] || false
+                        var hasA = activeKeys[Qt.Key_A] || false
+                        var hasS = activeKeys[Qt.Key_S] || false
+                        var hasD = activeKeys[Qt.Key_D] || false
+                        
+                        // WASD mantığı: W=S, A=L, S=B, D=R
+                        if (hasW && !hasS) {
+                            newDirection = "F" // Forward/İleri
+                        } else if (hasS && !hasW) {
+                            newDirection = "B" // Backward/Geri
+                        } else if (hasA && !hasD) {
+                            newDirection = "L" // Left/Sol
+                        } else if (hasD && !hasA) {
+                            newDirection = "R" // Right/Sağ
+                        }
+                        
+                        // Sadece yön değiştiğinde komut gönder (joystick ile aynı mantık)
+                        if (newDirection !== joystick.currentDirection) {
+                            btManager.sendJoystickCommand(newDirection)
+                            joystick.currentDirection = newDirection
+                            console.log("Keyboard direction changed to:", newDirection)
+                        }
+                        // Joystick görsel konumunu güncelle
+                        updateJoystickPosition(newDirection)
+                    }
 
                     Rectangle {
                         width: 280
@@ -332,50 +516,46 @@ Flickable {
                         trackOuter: theme.surfaceContainer
                         trackInner: "#000000"
                         
+                        // Sadece yön değiştiğinde komut gönder
+                        property string currentDirection: "S"
+                        
                         onMoved: function(x, y) {
-                            // Joystick hareketini komuta çevir
-                            var direction = "S" // Stop (default)
-                            var targetLeftPwm = 0
-                            var targetRightPwm = 0
-                            
-                            // Joystick hareketinde titreşim
-                            if (Qt.platform.os === "android") {
-                                Qt.vibrate(25) // 25ms titreşim
-                            }
+                            // Yeni yönü hesapla
+                            var newDirection = "S" // Stop (default)
                             
                             if (Math.abs(x) > Math.abs(y)) {
                                 // Yatay hareket baskın
                                 if (x > 0.3) {
-                                    direction = "R" // Right
-                                    targetRightPwm = Math.abs(x) * 255
+                                    newDirection = "R" // Right
                                 }
                                 else if (x < -0.3) {
-                                    direction = "L" // Left
-                                    targetLeftPwm = Math.abs(x) * 255
+                                    newDirection = "L" // Left
                                 }
                             } else {
-                                // Dikey hareket baskın - sadece komut gönder, gauge'ları değiştirme
+                                // Dikey hareket baskın
                                 if (y > 0.3) {
-                                    direction = "B" // Down
-                                    // Gaz pedalı - gauge'ları mevcut değerde tut
+                                    newDirection = "B" // Down
                                 }
                                 else if (y < -0.3) {
-                                    direction = "F" // Up
-                                    // Gaz pedalı - gauge'ları mevcut değerde tut
+                                    newDirection = "F" // Up
                                 }
                             }
                             
-                            if (Math.abs(x) < 0.3 && Math.abs(y) < 0.3) {
-                                direction = "S" // Stop
-                                // Stop - gauge'ları mevcut değerde tut
-                                console.log("Joystick centered - sending STOP command")
+                            // Sadece yön değiştiğinde komut gönder
+                            if (newDirection !== currentDirection) {
+                                btManager.sendJoystickCommand(newDirection)
+                                currentDirection = newDirection
+                                console.log("Joystick direction changed to:", newDirection, "x:", x.toFixed(2), "y:", y.toFixed(2))
                             }
-                            
-                            // Joystick gauge'ları değiştirmez, sadece komut gönderir
-                            // Gauge'lar sadece manuel olarak değiştirilebilir
-                            
-                            bluetoothManager.sendJoystickCommand(direction)
-                            console.log("Joystick command:", direction, "x:", x.toFixed(2), "y:", y.toFixed(2), "leftPWM:", targetLeftPwm.toFixed(0), "rightPWM:", targetRightPwm.toFixed(0))
+                        }
+                        
+                        // Bırakıldığında hemen STOP gönder (eğer zaten S değilse)
+                        onDraggingChanged: {
+                            if (!dragging && currentDirection !== "S") {
+                                btManager.sendJoystickCommand("S")
+                                currentDirection = "S"
+                                console.log("Joystick released - STOP sent")
+                            }
                         }
                     }
                 }

@@ -17,6 +17,7 @@ ApplicationWindow {
     readonly property bool connected: hasBtManager ? btBackend.isConnected : false
     readonly property int batteryLevel: hasBtManager ? btBackend.batteryLevel : 75
     readonly property bool charging: hasBtManager ? btBackend.isCharging : false
+    readonly property var gamepadBackend: gamepadManager
 
     onActiveTabChanged: {
         if (activeTab === 1 && bluetoothManager) {
@@ -301,6 +302,7 @@ ApplicationWindow {
             theme: theme
             iconFont: theme.fontIcon
             btManager: btBackend
+            gamepadManager: gamepadBackend
         }
 
         BluetoothPage {
@@ -358,7 +360,7 @@ ApplicationWindow {
                 model: ListModel {
                     ListElement { icon: "directions_car"; label: "SÜRÜŞ" }
                     ListElement { icon: "bluetooth_searching"; label: "BAĞLANTI" }
-                    ListElement { icon: "battery_charging_full"; label: "GÜÇ" }
+                    ListElement { icon: "lightbulb"; label: "RGB" }
                     ListElement { icon: "account_circle"; label: "PROFİL" }
                 }
 
